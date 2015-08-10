@@ -1,0 +1,58 @@
+//
+//  MyreturnTableViewCell.m
+//  燕庐母婴
+//
+//  Created by 侯泽彭 on 15/6/16.
+//  Copyright (c) 2015年 燕庐科技. All rights reserved.
+//
+
+#import "MyreturnTableViewCell.h"
+
+@implementation MyreturnTableViewCell
+
+- (void)awakeFromNib {
+    // Initialization code
+}
+
+-(instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self) {
+        self.touxiangImg = [[UIImageView alloc] initWithFrame:CGRectMake(6, 9, 25, 25)];
+        self.touxiangImg.layer.cornerRadius = 12;
+        self.touxiangImg.layer.masksToBounds = YES;
+        [self addSubview:self.touxiangImg];
+        
+        self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(36, 11, 120, 10)];
+        self.nameLabel.textColor = RGBA(98, 97, 97, 1);
+        self.nameLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:10];
+        [self addSubview:self.nameLabel];
+        
+        self.neirongLabel = [[UILabel alloc] initWithFrame:CGRectMake(36, self.nameLabel.frame.origin.y+self.nameLabel.frame.size.height+5, ScreenWidth-36, 12)];
+        self.neirongLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+        [self addSubview:self.neirongLabel];
+        
+        self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth-80, 10, 70, 10)];
+        self.timeLabel.textColor = RGBA(98, 97, 97, 1);
+        self.timeLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:10];
+        [self addSubview:self.timeLabel];
+        
+        self.huifukuangImg = [[UIImageView alloc] initWithFrame:CGRectMake(34, self.neirongLabel.frame.origin.y+self.neirongLabel.frame.size.height+3, 260, 20)];
+        self.huifukuangImg.image = [UIImage imageNamed:@"背景框"];
+        [self addSubview:self.huifukuangImg];
+        
+        self.pinglunLabel = [[UILabel alloc] initWithFrame:CGRectMake(5, 8, self.huifukuangImg.frame.size.width-10, 10)];
+        self.pinglunLabel.textColor = RGBA(137, 137, 137, 1);
+        self.pinglunLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:10];
+        [self.huifukuangImg addSubview:self.pinglunLabel];
+    }
+    return self;
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    
+    // Configure the view for the selected state
+}
+
+@end

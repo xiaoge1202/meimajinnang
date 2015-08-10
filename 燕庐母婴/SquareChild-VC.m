@@ -1,0 +1,616 @@
+//
+//  SquareChild-VC.m
+//  燕庐母婴
+//
+//  Created by 董飞剑 on 15/6/26.
+//  Copyright (c) 2015年 燕庐科技. All rights reserved.
+//
+
+#import "SquareChild-VC.h"
+
+@interface SquareChild_VC ()
+
+@property (strong,nonatomic) NSMutableArray *playArr;
+@property (strong,nonatomic) NSMutableArray *sayArr;
+@property (strong,nonatomic) NSURL *fileURL;
+
+@end
+
+@implementation SquareChild_VC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    self.navigationItem.title = @"详  情";
+    self.view.backgroundColor = RGBA(239, 239, 239, 1);
+
+    //获取用户ID
+    _user = [NSUserDefaults standardUserDefaults];
+    _userId = [_user objectForKey:@"userid"];
+    
+    
+    self.manager =[AFHTTPRequestOperationManager manager];
+    self.manager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
+    
+    //返回按钮
+    self.gobackBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.gobackBtn.frame = CGRectMake(-10, 14, 12, 20);
+    [self.gobackBtn setBackgroundImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    [self.gobackBtn addTarget:self action:@selector(gobackBtn:) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.gobackBtn];
+    self.navigationItem.leftBarButtonItem = leftItem;
+
+    
+    //--------------添加单元格---------------------
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight-104) style:UITableViewStylePlain];
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
+    [self.view addSubview:self.tableView];
+    
+    //隐藏多余单元格
+    [self setExtraCellLineHidden:self.tableView];
+    
+    
+    //头部视图
+    self.headView = [[UIView alloc] init];
+    self.headView.frame = CGRectMake(0, 0, ScreenWidth, 265) ;
+    self.tableView.tableHeaderView = self.headView;
+    
+    
+    
+    //---------------用户头像--------------------------
+    self.userHead = [[UIImageView alloc] initWithFrame:CGRectMake(10, 5, 30, 30)];
+    self.userHead.layer.masksToBounds = YES;
+    self.userHead.layer.cornerRadius = 15;
+    [self.headView addSubview:self.userHead];
+    
+    
+    //---------------用户名称--------------------------
+    self.userName = [[UILabel alloc] initWithFrame:CGRectMake(self.userHead.frame.origin.x+self.userHead.frame.size.width+6, 15, 70, 15)];
+    self.userName.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:11];
+    self.userName.textColor = RGBA(114, 113, 113, 1);
+    [self.headView addSubview:self.userName];
+    
+    
+    //----------------发布时间--------------------------
+    self.timelabel = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth-89, 15, 80, 15)];
+    self.timelabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:10];
+    self.timelabel.textAlignment = NSTextAlignmentRight;
+    [self.headView addSubview:self.timelabel];
+    
+    
+    //-----------------视频播放-------------------------
+    self.moviePlayerCtl = [[MPMoviePlayerController alloc]init];
+    //设置属性
+    self.moviePlayerCtl.allowsAirPlay = YES;
+    //设置
+    self.moviePlayerCtl.view.frame = CGRectMake(0, self.userHead.frame.origin.y+self.userHead.frame.size.height+5, ScreenWidth, 220);
+    //设置缩放模式
+    [self.moviePlayerCtl setScalingMode:MPMovieScalingModeAspectFit];
+    //设置属性风格
+    self.moviePlayerCtl.controlStyle = MPMovieControlStyleEmbedded;
+    //添加到本试图控制器视图
+    [self.headView addSubview:self.moviePlayerCtl.view];
+    
+    
+    //视频缩略图
+    self.imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 220)];
+    [self.moviePlayerCtl.view addSubview:self.imgView];
+    
+    
+    //播放按钮
+    self.playBtn = [[UIButton alloc] initWithFrame:CGRectMake((ScreenWidth-70)/2, (self.imgView.frame.size.height-70)/2, 70, 70)];
+    [self.playBtn setImage:[UIImage imageNamed:@"play"] forState:UIControlStateNormal];
+    [self.playBtn addTarget:self action:@selector(playBtnIsClick) forControlEvents:UIControlEventTouchUpInside];
+    [self.moviePlayerCtl.view addSubview:self.playBtn];
+    
+    
+    
+    self.toolBar = [[UIView alloc] initWithFrame:CGRectMake(0, ScreenHeight-103, ScreenWidth, 40)];
+    self.toolBar.backgroundColor = RGBA(201, 201, 202, 1);
+    [self.view addSubview:self.toolBar];
+    
+    
+    //--------------输入框---------------------
+    self.textField = [[UITextField alloc] initWithFrame:CGRectMake(5, 5, ScreenWidth-65, 30)];
+    self.textField.backgroundColor = [UIColor whiteColor];
+    self.textField.delegate = self;
+    self.textField.tag = 1001;
+    self.textField.placeholder = @"请输入评论内容......";
+    self.textField.layer.masksToBounds = YES;
+    self.textField.layer.cornerRadius = 5;
+    [self.toolBar addSubview:self.textField];
+    
+    
+    //--------------回复按钮---------------------
+    self.sendBtn = [[UIButton alloc] initWithFrame:CGRectMake(ScreenWidth-55, 5, 50, 30)];
+    [self.sendBtn setTitle:@"回复" forState:UIControlStateNormal];
+    self.sendBtn.layer.borderWidth = 1;
+    self.sendBtn.layer.borderColor = [UIColor lightGrayColor].CGColor;
+    self.sendBtn.layer.masksToBounds = YES;
+    self.sendBtn.layer.cornerRadius = 5;
+    [self.sendBtn addTarget:self action:@selector(sendDataToServer) forControlEvents:UIControlEventTouchUpInside];
+    [self.toolBar addSubview:self.sendBtn];
+}
+
+
+-(void)gobackBtn:(UIButton *)btn
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+
+
+- (void)setExtraCellLineHidden: (UITableView *)tableView
+{
+    UIView *view =[[UIView alloc]init];
+    view.backgroundColor = [UIColor clearColor];
+    [tableView setTableFooterView:view];
+    [tableView setTableHeaderView:view];
+}
+
+-(void)playBtnIsClick
+{
+    [self.playBtn setHidden:YES];
+    [self.imgView setHidden:YES];
+    [self.moviePlayerCtl play];
+}
+
+
+
+-(void)viewWillAppear:(BOOL)animated
+{
+    [self AFNetworking];
+    [self getSayData];
+}
+
+
+-(void)AFNetworking
+{
+    [self.manager GET:@"http://101.200.234.127:8080/YanLu/guangchang/list.do" parameters:[@{@"id":self.cellID}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        NSData *data = (NSData *)responseObject;
+        self.playArr = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        NSLog(@"playArr = %@",self.playArr);
+        
+        //用户头像
+        NSString *headStr = [[self.playArr objectAtIndex:0] objectForKey:@"touxiang"];
+        NSURL *url = [NSURL URLWithString:headStr];
+        self.userHead.image = [UIImage imageWithData:[NSData dataWithContentsOfURL:url]];
+        
+        
+        self.userName.text = [[self.playArr objectAtIndex:0] objectForKey:@"nicheng"];
+        
+        
+        //时间格式2015-12-04 18：39：23
+        //得到当前系统时间
+        //特定时间
+        NSDateFormatter *date = [[NSDateFormatter alloc] init];
+        [date setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        NSDate *d=[date dateFromString:[[self.playArr objectAtIndex:0] objectForKey:@"time"]];
+        
+        NSTimeInterval late = [d timeIntervalSince1970]*1;
+        NSDate* dat = [NSDate dateWithTimeIntervalSinceNow:0];
+        NSTimeInterval now = [dat timeIntervalSince1970]*1;
+        NSString *timeString = [[self.playArr objectAtIndex:0] objectForKey:@"time"];
+        
+        NSTimeInterval cha = now-late;
+        //liuxiaofeng
+        if(cha/60<1 &&cha/60>0) {
+            timeString = [NSString stringWithFormat:@"%f", cha];
+            timeString = [timeString substringToIndex:timeString.length-7];
+            timeString = @"刚刚";
+            self.timelabel.text = [NSString stringWithFormat:@"%@",timeString];
+        }
+        if (cha/3600<1) {
+            timeString = [NSString stringWithFormat:@"%f", cha/60];
+            timeString = [timeString substringToIndex:timeString.length-7];
+            timeString = [NSString stringWithFormat:@"%@分钟前", timeString];
+            self.timelabel.text = [NSString stringWithFormat:@"%@",timeString];
+        }
+        if (cha/3600>1&&cha/86400<1) {
+            timeString = [NSString stringWithFormat:@"%f", cha/3600];
+            timeString = [timeString substringToIndex:timeString.length-7];
+            timeString = [NSString stringWithFormat:@"%@小时前", timeString];
+            self.timelabel.text = [NSString stringWithFormat:@"%@",timeString];
+        }
+        if (cha/86400>1)
+        {
+            timeString = [NSString stringWithFormat:@"%f", cha/86400];
+            timeString = [timeString substringToIndex:timeString.length-7];
+            timeString = [NSString stringWithFormat:@"%@天前", timeString];
+            self.timelabel.text = [NSString stringWithFormat:@"%@",timeString];
+        }
+
+        
+        NSString *shipinStr = [[self.playArr objectAtIndex:0] objectForKey:@"videos"];
+        self.fileURL = [NSURL URLWithString:shipinStr];
+        self.imgView.image = [UIImage imageWithVideo:self.fileURL];
+
+        self.moviePlayerCtl.contentURL = self.fileURL;
+
+        [self.tableView reloadData];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+        NSLog(@"连接服务错误");
+    }];
+}
+
+
+//获取评论内容
+-(void)getSayData
+{
+    [self.manager GET:@"http://101.200.234.127:8080/YanLu/gcpinglun/list.do" parameters:[@{@"gcid":self.cellID}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        NSData *data = (NSData *)responseObject;
+        self.sayArr = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        
+        if (self.sayArr.count == 0) {
+            self.tableView.separatorStyle = NO;
+        }
+        
+        [self.tableView reloadData];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"连接服务错误");
+    }];
+}
+
+
+//发送
+-(void)sendDataToServer
+{
+    NSMutableDictionary *dic = [NSMutableDictionary dictionary];
+    [dic setObject:self.textField.text forKey:@"neirong"];
+    [dic setObject:_userId forKey:@"userid"];
+    [dic setObject:self.cellID forKey:@"gcid"];
+    
+    [self.manager GET:@"http://101.200.234.127:8080/YanLu/gcpinglun/save.do" parameters:dic success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        self.textField.text = @"";
+        [self getSayData];
+        [self dismissKeyBoard];
+        
+        [self.tableView reloadData];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+        NSLog(@"连接服务错误");
+    }];
+}
+
+
+- (void)textFieldDidBeginEditing:(UITextField *)textFiel
+{
+    //  1.取得被遮挡的textField的frame
+    CGRect frame = self.toolBar.frame;
+    
+    //  2.计算被遮挡的textField的bottom代表的高度(Y坐标) 与 能不被键盘遮挡的最大高度(Y坐标) 的距离
+    int offset = frame.origin.y +40 - (ScreenHeight - 253);
+    
+    [UIView animateWithDuration:0.35 animations:^{
+        if (offset > 0) {
+            //  让整个view向上偏移差距
+            self.view.frame = CGRectMake(0, -offset, self.view.frame.size.width, self.view.frame.size.height);
+        }
+    }];
+}
+
+
+//回收键盘
+-(void)dismissKeyBoard
+{
+    [self.view endEditing:YES];
+    [UIView animateWithDuration:0.35 animations:^{
+        //  编辑结束后重置为原来的
+        self.view.frame = CGRectMake(0, 64, ScreenWidth, ScreenHeight-40);
+    }];
+}
+
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.sayArr.count+1;
+}
+
+
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) {
+        
+        static NSString *show = @"cell";
+        showCell = [tableView dequeueReusableCellWithIdentifier:show];
+        
+        if (!showCell) {
+            
+            showCell = [[SquareShow_Cell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:show];
+            showCell.selectionStyle = UITableViewCellSelectionStyleNone;
+        }
+      
+        [showCell.voiceBtn addTarget:self action:@selector(songs) forControlEvents:UIControlEventTouchUpInside];
+        
+        showCell.showLabel.text = [[self.playArr objectAtIndex:0] objectForKey:@"neirong"];
+        //动态获取label的宽度和高度
+        showCell.showLabel.NumberOfLines = 0;
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+        paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+        NSDictionary *attributes = @{NSFontAttributeName:showCell.showLabel.font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+        size = [showCell.showLabel.text boundingRectWithSize:CGSizeMake(ScreenWidth-24-showCell.voiceBtn.frame.size.width, 999) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
+        [showCell.showLabel setFrame:CGRectMake(showCell.voiceBtn.frame.origin.x+showCell.voiceBtn.frame.size.width+5, 12, size.width, size.height)];
+        
+        
+        
+        //观看次数
+        NSString *times = [[[self.playArr objectAtIndex:0] objectForKey:@"chakanzongshu"] stringValue];
+        [showCell.lookTime setTitle:[NSString stringWithFormat:@"%@人观看",times] forState:UIControlStateNormal];
+        showCell.lookTime.frame = CGRectMake(35, showCell.showLabel.frame.origin.y+showCell.showLabel.frame.size.height+11, 80, 15);
+        
+        
+        //点赞人数
+        showCell.loveNum.frame = CGRectMake((ScreenWidth-80)/2, showCell.showLabel.frame.origin.y+showCell.showLabel.frame.size.height+11, 80, 15);
+        NSString *zanNum = [[[self.playArr objectAtIndex:0] objectForKey:@"dianzanzongshu"] stringValue];
+        [showCell.loveNum setTitle:[NSString stringWithFormat:@"%@人喜欢",zanNum] forState:UIControlStateNormal];
+        
+        
+        //评论人数
+        NSString *review = [[self.playArr objectAtIndex:0] objectForKey:@"pinglunzongshu"];
+        [showCell.reviewNum setTitle:[NSString stringWithFormat:@"%@人评论",review] forState:UIControlStateNormal];
+        showCell.reviewNum.frame = CGRectMake(ScreenWidth-100, showCell.showLabel.frame.origin.y+showCell.showLabel.frame.size.height+11, 80, 15);
+        
+        
+        //**************红线******************
+        showCell.redLineView.frame = CGRectMake(0, showCell.reviewNum.frame.origin.y+showCell.reviewNum.frame.size.height+13+showCell.moreBtn.frame.size.height/2, ScreenWidth, 1.5);
+        
+        
+        //***************更多********************
+        showCell.moreBtn.frame = CGRectMake((ScreenWidth-112)/5, showCell.lookTime.frame.origin.y+showCell.lookTime.frame.size.height+13, 28, 28);
+
+        
+        //----------------收藏------------------
+        showCell.addBtn.frame = CGRectMake(showCell.moreBtn.frame.origin.x+showCell.moreBtn.frame.size.width+(ScreenWidth-112)/5, showCell.lookTime.frame.origin.y+showCell.lookTime.frame.size.height+13, 28, 28);
+        [showCell.addBtn addTarget:self action:@selector(addBtnIsClick:) forControlEvents:UIControlEventTouchUpInside];
+
+        [self.manager POST:@"http://101.200.234.127:8080/YanLu/gcguanzhu/panduan.do" parameters:[@{@"guserid":self.videoUserID,@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            
+            NSData *data = responseObject;
+            NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+            if ([str isEqualToString:@"false"]) {
+                
+                //未收藏
+                [showCell.addBtn setImage:[UIImage imageNamed:@"btn-nor-jia"] forState:UIControlStateNormal];
+            }else{
+                
+                //收藏
+                [showCell.addBtn setImage:[UIImage imageNamed:@"btn-sel-jia"] forState:UIControlStateNormal];
+                
+            }
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            NSLog(@"链接出错");
+        }];
+
+        
+        //*****************分享***************
+        showCell.shareBtn.frame = CGRectMake(showCell.addBtn.frame.origin.x+showCell.addBtn.frame.size.width+(ScreenWidth-112)/5, showCell.lookTime.frame.origin.y+showCell.lookTime.frame.size.height+13, 28, 28);
+        
+        
+        
+        //****************点赞*****************
+        showCell.loveBtn.frame = CGRectMake(showCell.shareBtn.frame.origin.x+showCell.shareBtn.frame.size.width+(ScreenWidth-112)/5, showCell.lookTime.frame.origin.y+showCell.lookTime.frame.size.height+13, 28, 28);
+        [showCell.loveBtn addTarget:self action:@selector(loveBtnIsClick:) forControlEvents:UIControlEventTouchUpInside];
+
+        [self.manager GET:@"http://101.200.234.127:8080/YanLu/dianzan/panduan.do" parameters:[@{@"guangchangid":self.cellID,@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+            
+            NSData *data = responseObject;
+            NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+            if ([str isEqualToString:@"false"]) {
+                
+                //未点赞
+                [showCell.loveBtn setImage:[UIImage imageNamed:@"btn-nor-xin"] forState:UIControlStateNormal];
+
+            }else{
+                
+                //已点赞
+                [showCell.loveBtn setImage:[UIImage imageNamed:@"icon-xin"] forState:UIControlStateNormal];
+            }
+        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+            
+            NSLog(@"连接服务错误");
+        }];
+        
+        
+        return showCell;
+
+    }else{
+        
+        static NSString *cellID = @"cellID";
+        SquareChild_Cell *cell = [tableView dequeueReusableCellWithIdentifier:cellID];
+        if (!cell) {
+            
+            cell = [[SquareChild_Cell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellID];
+        }
+        
+        //---------------用户头像------------------
+        NSString *headStr = [[self.sayArr objectAtIndex:indexPath.row-1] objectForKey:@"touxiang"];
+        NSURL *url = [NSURL URLWithString:headStr];
+        NSData *data = [NSData dataWithContentsOfURL:url];
+        cell.userHead.image = [UIImage imageWithData:data];
+        
+        
+        //---------------用户昵称-------------------
+        cell.userName.text = [[self.sayArr objectAtIndex:indexPath.row-1] objectForKey:@"nicheng"];
+        
+        
+        //--------------回复时间----------------------
+        //时间格式2015-12-04 18:39:23
+        //得到当前系统时间
+        //特定时间
+        NSDateFormatter *date = [[NSDateFormatter alloc] init];
+        [date setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        NSDate *d=[date dateFromString:[[self.sayArr objectAtIndex:indexPath.row-1] objectForKey:@"time"]];
+        
+        NSTimeInterval late = [d timeIntervalSince1970]*1;
+        NSDate* dat = [NSDate dateWithTimeIntervalSinceNow:0];
+        NSTimeInterval now = [dat timeIntervalSince1970]*1;
+        NSString *timeString = [[self.sayArr objectAtIndex:indexPath.row-1] objectForKey:@"time"];
+        
+        NSTimeInterval cha = now-late;
+        if(cha/60<1 &&cha/60>0) {
+            timeString = [NSString stringWithFormat:@"%f", cha];
+            timeString = [timeString substringToIndex:timeString.length-7];
+            timeString = @"刚刚";
+            cell.timelabel.text = [NSString stringWithFormat:@"%@",timeString];
+        }
+        if (cha/3600<1) {
+            timeString = [NSString stringWithFormat:@"%f", cha/60];
+            timeString = [timeString substringToIndex:timeString.length-7];
+            timeString = [NSString stringWithFormat:@"%@分钟前", timeString];
+            cell.timelabel.text = [NSString stringWithFormat:@"%@",timeString];
+        }
+        if (cha/3600>1&&cha/86400<1) {
+            timeString = [NSString stringWithFormat:@"%f", cha/3600];
+            timeString = [timeString substringToIndex:timeString.length-7];
+            timeString = [NSString stringWithFormat:@"%@小时前", timeString];
+            cell.timelabel.text = [NSString stringWithFormat:@"%@",timeString];
+        }
+        if (cha/86400>1)
+        {
+            timeString = [NSString stringWithFormat:@"%f", cha/86400];
+            timeString = [timeString substringToIndex:timeString.length-7];
+            timeString = [NSString stringWithFormat:@"%@天前", timeString];
+            cell.timelabel.text = [NSString stringWithFormat:@"%@",timeString];
+        }
+
+        //--------------回复内容------------------------
+        cell.sayLab.text = [[self.sayArr objectAtIndex:indexPath.row-1] objectForKey:@"neirong"];
+        //动态获取label的宽度和高度
+        cell.sayLab.NumberOfLines = 0;
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+        paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+        NSDictionary *attributes = @{NSFontAttributeName:        cell.sayLab.font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+        size1 = [cell.sayLab.text boundingRectWithSize:CGSizeMake(ScreenWidth-18-cell.userHead.frame.size.width, 999) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
+        [cell.sayLab setFrame:CGRectMake(cell.userHead.frame.origin.x+cell.userHead.frame.size.width+5, cell.userName.frame.origin.y+cell.userName.frame.size.height+7, size1.width, size1.height)];
+
+        return cell;
+    }
+}
+
+
+-(void)songs
+{
+    
+}
+
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) {
+        
+        return size.height+90;
+    }else{
+        
+        return size1.height+50;
+    }
+}
+
+//关注按钮关联事件
+-(void)addBtnIsClick:(UIButton *)button
+{
+    [self.manager POST:@"http://101.200.234.127:8080/YanLu/gcguanzhu/panduan.do" parameters:[@{@"guserid":self.videoUserID,@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+
+        NSData *data = responseObject;
+        NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        
+        if ([str isEqualToString:@"true"]) {
+            
+            [showCell.addBtn setImage:[UIImage imageNamed:@"btn-nor-jia"] forState:UIControlStateNormal];
+            
+            [self.manager POST:@"http://101.200.234.127:8080/YanLu/gcguanzhu/delete.do" parameters:[@{@"guserid":self.videoUserID,@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                
+                
+                NSLog(@"取消收藏");
+                
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                
+                NSLog(@"error---");
+            }];
+            
+        }else{
+            
+            [showCell.addBtn setImage:[UIImage imageNamed:@"btn-sel-jia"] forState:UIControlStateNormal];
+            
+            [self.manager POST:@"http://101.200.234.127:8080/YanLu/gcguanzhu/save.do" parameters:[@{@"guserid":self.videoUserID,@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                
+                
+                NSLog(@"收藏成功");
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                
+                NSLog(@"error+++++++");
+            }];
+        }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"error");
+    }];
+}
+
+
+
+//点赞
+-(void)loveBtnIsClick:(UIButton *)btn
+{
+    [self.manager POST:@"http://101.200.234.127:8080/YanLu/dianzan/panduan.do" parameters:[@{@"guangchangid":self.cellID,@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        NSData *data = responseObject;
+        NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        NSLog(@"str = %@",str);
+        if ([str isEqualToString:@"false"]) {
+            
+            [showCell.loveBtn setImage:[UIImage imageNamed:@"icon-xin"] forState:UIControlStateNormal];
+            [self.manager POST:@"http://101.200.234.127:8080/YanLu/dianzan/save.do" parameters:[@{@"guangchangid":self.cellID,@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                
+                NSLog(@"点赞成功!");
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                
+                NSLog(@"点赞接口，连接服务器失败!");
+            }];
+        }else{
+        
+            [showCell.loveBtn setImage:[UIImage imageNamed:@"btn-nor-xin"] forState:UIControlStateNormal];
+            
+            [self.manager POST:@"http://101.200.234.127:8080/YanLu/dianzan/delete.do" parameters:[@{@"guangchangid":self.cellID,@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                
+                NSLog(@"取消赞!");
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                
+                NSLog(@"取消赞接口，连接服务器失败!");
+            }];
+        }
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"点赞接口，服务器出错!");
+    }];
+    
+}
+
+
+//收回键盘
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [self.textField resignFirstResponder];
+    [self dismissKeyBoard];
+}
+
+
+-(BOOL)textFieldShouldReturn:(UITextField *)textField
+{
+    [self dismissKeyBoard];
+
+    return YES;
+}
+
+//收回键盘
+//- (void)tableView:(UITableView *)tableView didEndDisplayingCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath*)indexPath
+//{
+//    [self.textField resignFirstResponder];
+//    [self dismissKeyBoard];
+//}
+
+
+@end

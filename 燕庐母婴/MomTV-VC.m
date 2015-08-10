@@ -1,0 +1,1064 @@
+//
+//  MomTV-VC.m
+//  燕庐母婴
+//
+//  Created by 董飞剑 on 15/6/25.
+//  Copyright (c) 2015年 燕庐科技. All rights reserved.
+//
+
+#import "MomTV-VC.h"
+#import "ASIFormDataRequest.h"
+#import "SendVideo-VC.h"
+#import "MJRefresh.h"
+#import "MJRefreshFooterView.h"
+#import "MJRefreshHeaderView.h"
+@interface MomTV_VC () <UINavigationControllerDelegate,UIImagePickerControllerDelegate,ASIHTTPRequestDelegate,NSURLConnectionDelegate>
+{
+    MJRefreshHeaderView *_header;
+    MJRefreshFooterView *_footer;
+    
+}
+@property (strong,nonatomic) NSMutableArray *noticeArr;
+@property (strong,nonatomic) NSMutableArray *dataArr;
+@property (strong,nonatomic) NSURL *movieURL;
+@property (strong,nonatomic) NSMutableArray *topListArr;
+@property (strong,nonatomic) NSMutableArray *weekArr;
+@property (strong,nonatomic) NSMutableArray *monthArr;
+@property (strong,nonatomic) NSMutableArray *yearArr;
+@property (strong,nonatomic) NSMutableArray *dataNewArr;
+
+@end
+
+@implementation MomTV_VC
+
+NSInteger i = 0;
+-(void)viewWillAppear:(BOOL)animated
+{
+    [self AFNetworking];
+}
+
+
+-(void)AFNetworking
+{
+    self.manager =[AFHTTPRequestOperationManager manager];
+    self.manager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
+    
+    [self.manager GET:@"http://101.200.234.127:8080/YanLu/guangchang/list.do" parameters:[@{@"start":[NSString stringWithFormat:@"%d",i]}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        NSData *data = (NSData *)responseObject;
+        self.dataArr = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+
+        if ( i == 0){
+            
+            
+            self.dataNewArr = [[NSMutableArray alloc]initWithArray:self.dataArr];
+            [self.squareCollection reloadData];
+        }else{
+            
+            for (int j = 0; j < [self.dataArr count]; j++)
+            {
+                NSMutableDictionary *dic = [self.dataArr  objectAtIndex:j];
+                [self.dataNewArr addObject:dic];
+            }
+            
+            [self.squareCollection reloadData];
+        }
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"连接服务错误");
+    }];
+}
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"导航栏"] forBarMetrics:UIBarMetricsDefault];
+    
+    _qualityType = UIImagePickerControllerQualityTypeHigh;
+    _mp4Quality = AVAssetExportPresetHighestQuality;
+    _hasVideo = NO;
+    _hasMp4 = NO;
+    
+    
+    self.view.backgroundColor = RGBA(235, 235, 235, 1);
+    
+    //----------------导航栏添加view-------------------
+    
+    self.navView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 44)];
+    UIBarButtonItem *bar = [[UIBarButtonItem alloc]initWithCustomView:self.navView];
+    self.navigationItem.leftBarButtonItem = bar;
+    
+    //返回按钮-5, 14, 12, 20
+    self.backBtn = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, 40, 40)];
+    [self.backBtn setImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    //上左下右
+    [self.backBtn setImageEdgeInsets:UIEdgeInsetsMake(14, 0, 6, 20)];
+    [self.backBtn addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
+    [self.navView addSubview:self.backBtn];
+    
+    
+    //---------------关注--------------
+    self.noticeBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.noticeBtn.frame = CGRectMake(self.backBtn.frame.origin.x+self.backBtn.frame.size.width + (ScreenWidth-202)/4-15, 14, 40, 20);
+    [self.noticeBtn setTitle:@"关 注" forState:UIControlStateNormal];
+    self.noticeBtn.titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:11];
+    [self.noticeBtn setTitleColor:RGBA(239, 239, 239, 1) forState:UIControlStateNormal];
+    [self.noticeBtn addTarget:self action:@selector(noticeBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [self.navView addSubview:self.noticeBtn];
+    
+    
+    self.noticeLab = [[UILabel alloc] initWithFrame:CGRectMake(self.noticeBtn.frame.origin.x+(self.noticeBtn.frame.size.width-5)/2, self.noticeBtn.frame.origin.y+self.noticeBtn.frame.size.height+1, 5, 5)];
+    self.noticeLab.hidden = YES;
+    self.noticeLab.backgroundColor = [UIColor whiteColor];
+    self.noticeLab.layer.masksToBounds = YES;
+    self.noticeLab.layer.cornerRadius = 2.5;
+    [self.navView addSubview:self.noticeLab];
+    
+    
+    //--------------广场---------------
+    self.squareBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.squareBtn.frame = CGRectMake(self.noticeBtn.frame.origin.x+self.noticeBtn.frame.size.width+(ScreenWidth-202)/4, 14, 40, 20);
+    [self.squareBtn setTitle:@"广 场" forState:UIControlStateNormal];
+    self.squareBtn.titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:16];
+    [self.squareBtn setTitleColor:RGBA(239, 239, 239, 1) forState:UIControlStateNormal];
+    [self.squareBtn addTarget:self action:@selector(squareBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [self.navView addSubview:self.squareBtn];
+    
+    
+    
+    self.squareLab = [[UILabel alloc] initWithFrame:CGRectMake(self.squareBtn.frame.origin.x+(self.squareBtn.frame.size.width-5)/2, self.squareBtn.frame.origin.y+self.squareBtn.frame.size.height+1, 5, 5)];
+    self.squareLab.backgroundColor = [UIColor whiteColor];
+    self.squareLab.layer.masksToBounds = YES;
+    self.squareLab.layer.cornerRadius = 2.5;
+    [self.navView addSubview:self.squareLab];
+    
+    
+    //---------------榜单---------------
+    self.listBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.listBtn.frame = CGRectMake( self.squareBtn.frame.origin.x+self.squareBtn.frame.size.width+(ScreenWidth-202)/4, 14, 40, 20);
+    [self.listBtn setTitle:@"榜 单" forState:UIControlStateNormal];
+    self.listBtn.titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:11];
+    [self.listBtn setTitleColor:RGBA(239, 239, 239, 1) forState:UIControlStateNormal];
+    [self.listBtn addTarget:self action:@selector(listBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [self.navView addSubview:self.listBtn];
+    
+    
+    self.listLab = [[UILabel alloc] initWithFrame:CGRectMake(self.listBtn.frame.origin.x+(self.listBtn.frame.size.width-5)/2, self.listBtn.frame.origin.y+self.listBtn.frame.size.height+1, 5, 5)];
+    self.listLab.hidden = YES;
+    self.listLab.backgroundColor = [UIColor whiteColor];
+    self.listLab.layer.masksToBounds = YES;
+    self.listLab.layer.cornerRadius = 2.5;
+    [self.navView addSubview:self.listLab];
+    
+    
+    //---------------录像---------------
+    self.cameraBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.cameraBtn.frame = CGRectMake( self.listBtn.frame.origin.x+self.listBtn.frame.size.width+(ScreenWidth-202)/4, 14, 22, 17);
+    [self.cameraBtn setBackgroundImage:[UIImage imageNamed:@"nor-pic"] forState:UIControlStateNormal];
+    [self.cameraBtn addTarget:self action:@selector(cameraBtnClick) forControlEvents:UIControlEventTouchUpInside];
+    [self.navView addSubview:self.cameraBtn];
+    
+    
+    //初始化scrollView
+    self.scrollView  = [[UIScrollView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight)];
+    self.scrollView.delegate = self;
+    self.scrollView.pagingEnabled = NO;// 改完之后，变流畅了
+    self.scrollView.showsHorizontalScrollIndicator = NO;
+    self.scrollView.pagingEnabled = YES;
+    self.scrollView.showsVerticalScrollIndicator = NO;
+    //滑动范围
+    self.scrollView.contentSize = CGSizeMake(ScreenWidth*3,0);
+    //当前页3
+    self.scrollView.contentOffset = CGPointMake(ScreenWidth, 0);
+    [self.view addSubview:self.scrollView];
+    
+    
+    [self initWithNoticeView];
+    [self initWithSquareView];
+    [self initWithListView];
+    
+    //    self.picker = [[UIImagePickerController alloc]init];
+    //    self.picker.delegate = self;
+    
+    // 3.1.下拉刷新
+    [self addHeader];
+    
+    // 3.2.上拉加载更多
+    [self addFooter];
+}
+
+
+- (void)addFooter
+{
+    __unsafe_unretained MomTV_VC *vc = self;
+    MJRefreshFooterView *footer = [MJRefreshFooterView footer];
+    footer.scrollView = self.squareCollection;
+    footer.beginRefreshingBlock = ^(MJRefreshBaseView *refreshView) {
+        i++;
+        
+        [self AFNetworking];
+        
+        // 模拟延迟加载数据，因此2秒后才调用）
+        // 这里的refreshView其实就是footer
+        [vc performSelector:@selector(doneWithView:) withObject:refreshView afterDelay:0];
+        
+        NSLog(@"%@----开始进入刷新状态", refreshView.class);
+    };
+    footer.endStateChangeBlock = ^(MJRefreshBaseView *refreshView) {
+        
+        // 刷新完毕就会回调这个Block
+        NSLog(@"%@----刷新完毕", refreshView.class);
+    };
+    _footer = footer;
+}
+
+
+
+- (void)addHeader
+{
+    __unsafe_unretained MomTV_VC *vc = self;
+    
+    MJRefreshHeaderView *header = [MJRefreshHeaderView header];
+    header.scrollView = self.squareCollection;
+    header.beginRefreshingBlock = ^(MJRefreshBaseView *refreshView) {
+        
+        [self AFNetworking];
+        
+        // 模拟延迟加载数据，因此2秒后才调用）
+        // 这里的refreshView其实就是header
+        [vc performSelector:@selector(doneWithView:) withObject:refreshView afterDelay:2.0];
+        
+        NSLog(@"%@----开始进入刷新状态", refreshView.class);
+    };
+    header.endStateChangeBlock = ^(MJRefreshBaseView *refreshView) {
+        // 刷新完毕就会回调这个Block
+        NSLog(@"%@----刷新完毕", refreshView.class);
+    };
+    header.refreshStateChangeBlock = ^(MJRefreshBaseView *refreshView, MJRefreshState state) {
+        // 控件的刷新状态切换了就会调用这个block
+        switch (state) {
+            case MJRefreshStateNormal:
+                NSLog(@"%@----切换到：普通状态", refreshView.class);
+                break;
+                
+            case MJRefreshStatePulling:
+                NSLog(@"%@----切换到：松开即可刷新的状态", refreshView.class);
+                break;
+                
+            case MJRefreshStateRefreshing:
+                NSLog(@"%@----切换到：正在刷新状态", refreshView.class);
+                break;
+            default:
+                break;
+        }
+    };
+    //[header beginRefreshing];
+    _header = header;
+}
+
+
+- (void)doneWithView:(MJRefreshBaseView *)refreshView
+{
+    // 刷新表格
+    [self.squareCollection reloadData];
+    // (最好在刷新表格后调用)调用endRefreshing可以结束刷新状态
+    [refreshView endRefreshing];
+}
+
+
+//滑动页面，按钮跟着滑动
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if (self.scrollView.contentOffset.x==0) {
+        
+        [self noticeBtnClick];
+    }else if(self.scrollView.contentOffset.x==ScreenWidth){
+        
+        [self squareBtnClick];
+    }else{
+        
+        [self listBtnClick];
+    }
+}
+
+
+//关注
+-(void)initWithNoticeView
+{
+    self.noticeView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight)];
+    [self.scrollView addSubview:self.noticeView];
+
+    //---------------网格视图自动布局---------------------
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    //单元格大小
+    flowLayout.itemSize = CGSizeMake((ScreenWidth-49)/2, 205);
+    //支持上下滑动
+    flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
+    //设置各区域上、左、下、右空白的大小
+    flowLayout.sectionInset = UIEdgeInsetsMake(14, 14, 0, 14);
+    
+    
+    self.noticeCollection = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight-64) collectionViewLayout:flowLayout];
+    self.noticeCollection.delegate = self;
+    self.noticeCollection.dataSource = self;
+    self.noticeCollection.tag = 1001;
+    self.noticeCollection.backgroundColor = RGBA(255, 255, 255, 1);
+    [self.noticeView addSubview:self.noticeCollection];
+    
+    
+    [self.noticeCollection registerClass:[Notice_Cell class] forCellWithReuseIdentifier:@"noticeCell"];
+}
+
+
+//广场
+-(void)initWithSquareView
+{
+    self.squareView = [[UIView alloc] initWithFrame:CGRectMake(ScreenWidth, 0, ScreenWidth, ScreenHeight)];
+    [self.scrollView addSubview:self.squareView];
+    
+    //---------------网格视图自动布局---------------------
+    UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
+    //单元格大小
+    flowLayout.itemSize = CGSizeMake((ScreenWidth-49)/2, 205);
+    //支持上下滑动
+    flowLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
+    //设置各区域上、左、下、右空白的大小
+    flowLayout.sectionInset = UIEdgeInsetsMake(14, 14, 0, 14);
+    
+    
+    self.squareCollection = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight-64) collectionViewLayout:flowLayout];
+    self.squareCollection.delegate = self;
+    self.squareCollection.dataSource = self;
+    self.squareCollection.tag = 1002;
+    self.squareCollection.backgroundColor = RGBA(255, 255, 255, 1);
+    [self.squareView addSubview:self.squareCollection];
+    
+    
+    [self.squareCollection registerClass:[Square_Cell class] forCellWithReuseIdentifier:@"squareCell"];
+}
+
+
+//榜单
+-(void)initWithListView
+{
+    self.listView = [[UIView alloc] initWithFrame:CGRectMake(ScreenWidth*2, 0, ScreenWidth, ScreenHeight)];
+    [self.scrollView addSubview:self.listView];
+
+    //---------------网格视图自动布局---------------------
+    UICollectionViewFlowLayout *flow = [[UICollectionViewFlowLayout alloc] init];
+    //单元格大小
+    flow.itemSize = CGSizeMake((ScreenWidth-51)/2, 155);
+    //支持上下滑动
+    flow.scrollDirection = UICollectionViewScrollDirectionVertical;
+    //设置各区域上、左、下、右空白的大小
+    flow.sectionInset = UIEdgeInsetsMake(11, 16, 5, 16);
+    //设置页眉大小
+//    self.flow.headerReferenceSize = CGSizeMake(ScreenWidth, 70);
+//    // 设置行、列间距
+//    self.flow.minimumLineSpacing = 10;
+//    self.flow.minimumInteritemSpacing = 20;
+
+    
+    self.topListCollection = [[UICollectionView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight-64) collectionViewLayout:flow];
+    self.topListCollection.delegate = self;
+    self.topListCollection.dataSource = self;
+    self.topListCollection.tag = 1003;
+    self.topListCollection.backgroundColor = RGBA(255, 255, 255, 1);
+    [self.listView addSubview:self.topListCollection];
+    
+    
+    [self.topListCollection registerClass:[Top_listCell class] forCellWithReuseIdentifier:@"topCell"];
+    //添加页眉
+    [self.topListCollection registerClass:[TopListHeader_Cell class] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:@"headCell"];
+
+}
+
+
+//------------------返回按钮
+-(void)goBack:(UIButton *)sender
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+
+//------------------关注
+-(void)noticeBtnClick
+{
+    [self.scrollView setContentOffset:CGPointMake(0, 0) animated:YES];
+
+    self.noticeBtn.titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:16];
+    self.noticeLab.hidden = NO;
+    
+    self.squareBtn.titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:11];
+    self.squareLab.hidden = YES;
+    
+    self.listBtn.titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:11];
+    self.listLab.hidden = YES;
+    
+    [self getNoticeData];
+}
+
+
+     //**************获取关注信息******************
+
+-(void)getNoticeData
+{
+    //获取用户ID
+    _user = [NSUserDefaults standardUserDefaults];
+    _userId = [_user objectForKey:@"userid"];
+    
+    
+    self.manager =[AFHTTPRequestOperationManager manager];
+    self.manager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
+    
+    [self.manager GET:@"http://101.200.234.127:8080/YanLu/gcguanzhu/list.do" parameters:[@{@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        NSData *data = (NSData *)responseObject;
+        self.noticeArr = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        NSLog(@"*****************%@",self.noticeArr);
+        
+        [self.noticeCollection reloadData];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+        NSLog(@"连接服务错误");
+    }];
+
+}
+
+//------------------广场
+-(void)squareBtnClick
+{
+    [self.scrollView setContentOffset:CGPointMake(ScreenWidth, 0) animated:YES];
+    
+    self.noticeBtn.titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:11];
+    self.noticeLab.hidden = YES;
+    
+    self.squareBtn.titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:16];
+    self.squareLab.hidden = NO;
+    
+    self.listBtn.titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:11];
+    self.listLab.hidden = YES;
+}
+
+
+//------------------榜单
+-(void)listBtnClick
+{
+    [self.scrollView setContentOffset:CGPointMake(ScreenWidth*2, 0) animated:YES];
+    
+    self.noticeBtn.titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:11];
+    self.noticeLab.hidden = YES;
+    
+    self.squareBtn.titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:11];
+    self.squareLab.hidden = YES;
+    
+    self.listBtn.titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:16];
+    self.listLab.hidden = NO;
+    
+    [self getListData];
+}
+
+     //**************获取榜单信息******************
+
+-(void)getListData
+{
+    self.manager =[AFHTTPRequestOperationManager manager];
+    self.manager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
+    
+    [self.manager GET:@"" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        NSData *data = (NSData *)responseObject;
+        self.topListArr = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        
+        [self.topListCollection reloadData];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"连接服务错误");
+    }];
+}
+
+
+//上传视频
+-(void)cameraBtnClick
+{
+    
+//    self.actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"录像", @"从视频库中选取", nil];
+//    [self.actionSheet showInView:self.view];
+    
+    UIImagePickerController* pickerView = [[UIImagePickerController alloc] init];
+    pickerView.sourceType = UIImagePickerControllerSourceTypeCamera;
+    NSArray* availableMedia = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
+    pickerView.mediaTypes = [NSArray arrayWithObject:availableMedia[1]];
+    
+    [self presentViewController:pickerView animated:YES completion:nil];
+    
+    pickerView.videoMaximumDuration = 30;
+    pickerView.delegate = self;
+}
+
+
+- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 0)
+    {
+        UIImagePickerController* pickerView = [[UIImagePickerController alloc] init];
+        pickerView.sourceType = UIImagePickerControllerSourceTypeCamera;
+        NSArray* availableMedia = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];
+        pickerView.mediaTypes = [NSArray arrayWithObject:availableMedia[1]];
+        
+        [self presentViewController:pickerView animated:YES completion:nil];
+        
+        pickerView.videoMaximumDuration = 30;
+        pickerView.delegate = self;
+        
+    }else if (buttonIndex == 1){
+        
+        if (self.picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary)
+        {
+            self.picker.allowsEditing = NO;
+            [self presentViewController:self.picker animated:YES completion:nil];
+        }
+    }
+}
+
+
+#pragma mark - UIImagePickerControllerDelegate
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    _videoURL = info[UIImagePickerControllerMediaURL] ;
+    
+    
+    _fileSize.text = [NSString stringWithFormat:@"%dkb", [self getFileSize:[[_videoURL absoluteString] substringFromIndex:16]]];
+    _videoLen.text = [NSString stringWithFormat:@"%.0fs", [self getVideoDuration:_videoURL]];
+    _hasVideo = YES;
+    
+    [self buttonClick3];
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+
+//
+- (void)buttonClick3
+{
+    if (!_hasVideo)
+    {
+        return;
+    }
+    
+    AVURLAsset *avAsset = [AVURLAsset URLAssetWithURL:_videoURL options:nil];
+    NSArray *compatiblePresets = [AVAssetExportSession exportPresetsCompatibleWithAsset:avAsset];
+    
+    if ([compatiblePresets containsObject:_mp4Quality])
+        
+    {
+        _alert = [[UIAlertView alloc] init];
+        [_alert setTitle:@"Waiting.."];
+        
+        UIActivityIndicatorView* activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        activity.frame = CGRectMake(140,80,CGRectGetWidth(_alert.frame),CGRectGetHeight(_alert.frame));
+        [_alert addSubview:activity];
+        [activity startAnimating];
+        
+        _startDate = [NSDate date] ;
+        
+        AVAssetExportSession *exportSession = [[AVAssetExportSession alloc]initWithAsset:avAsset presetName:_mp4Quality];
+        NSDateFormatter* formater = [[NSDateFormatter alloc] init];
+        [formater setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        _mp4Path = [NSHomeDirectory() stringByAppendingFormat:@"/Documents/output-%@.mp4", [formater stringFromDate:[NSDate date]]] ;
+        
+        exportSession.outputURL = [NSURL fileURLWithPath: _mp4Path];
+        exportSession.shouldOptimizeForNetworkUse = _networkOpt;
+        exportSession.outputFileType = AVFileTypeMPEG4;
+        [exportSession exportAsynchronouslyWithCompletionHandler:^{
+            switch ([exportSession status]) {
+                case AVAssetExportSessionStatusFailed:
+                {
+                    [_alert dismissWithClickedButtonIndex:0 animated:NO];
+                   
+                    break;
+                }
+                    
+                case AVAssetExportSessionStatusCancelled:
+                    NSLog(@"Export canceled");
+                    [_alert dismissWithClickedButtonIndex:0
+                                                 animated:YES];
+                    break;
+                case AVAssetExportSessionStatusCompleted:
+                    NSLog(@"Successful!");
+                    [self performSelectorOnMainThread:@selector(convertFinish) withObject:nil waitUntilDone:NO];
+                    
+                    break;
+                default:
+                    break;
+            }
+        }];
+    }else{
+        
+    }
+    
+    if (!_hasMp4)
+    {
+        return;
+    }
+}
+
+
+//开始上传
+- (void) convertFinish
+{
+    [_alert dismissWithClickedButtonIndex:0 animated:YES];
+    CGFloat duration = [[NSDate date] timeIntervalSinceDate:_startDate];
+    
+    _convertTime.text = [NSString stringWithFormat:@"%.2fs", duration];
+    _mp4Size.text = [NSString stringWithFormat:@"%dkb", [self getFileSize:_mp4Path]];
+    _hasMp4 = YES;
+    
+    if (!_hasMp4){
+        
+        return;
+    }
+    
+    NSData *data=[NSData dataWithContentsOfFile:_mp4Path];
+    
+    ASIFormDataRequest* request = [ASIFormDataRequest requestWithURL:[NSURL URLWithString:@"http://101.200.234.127:8080/YanLu/huifu/upload.do"]];
+    request.delegate = self;
+
+    NSDateFormatter *formatter =[[NSDateFormatter alloc] init];
+    [formatter setDateFormat:@"yyyyMMddHHmmss"];
+    NSString * currentTime = [formatter stringFromDate:[NSDate date]];
+
+    
+    [request setData:data  withFileName:[NSString stringWithFormat:@"%@%@", currentTime,@"video.mp4"] andContentType:@"video/mp4" forKey:@"fileName"];
+    
+    [request setCompletionBlock:^{
+        
+        //上传成功跳转到编辑页面
+        if (request.responseString != nil)
+        {
+            SendVideo_VC *send = [[SendVideo_VC alloc]init];
+            send.fileURL = request.responseString;
+            [self.navigationController pushViewController:send animated:YES];
+        }
+    }];
+
+    [request startAsynchronous];
+}
+
+
+- (NSInteger) getFileSize:(NSString*) path
+{
+    NSFileManager * filemanager = [[NSFileManager alloc]init] ;
+    if([filemanager fileExistsAtPath:path]){
+        NSDictionary * attributes = [filemanager attributesOfItemAtPath:path error:nil];
+        NSNumber *theFileSize;
+        if ( (theFileSize = [attributes objectForKey:NSFileSize]) )
+            return  [theFileSize intValue]/1024;
+        else
+            return -1;
+    }else{
+        
+        return -1;
+    }
+}
+
+
+- (CGFloat) getVideoDuration:(NSURL*) URL
+{
+    NSDictionary *opts = [NSDictionary dictionaryWithObject:[NSNumber numberWithBool:NO] forKey:AVURLAssetPreferPreciseDurationAndTimingKey];
+    AVURLAsset *urlAsset = [AVURLAsset URLAssetWithURL:URL options:opts];
+    float second = 0;
+    second = urlAsset.duration.value/urlAsset.duration.timescale;
+    return second;
+}
+
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    [picker dismissViewControllerAnimated:YES completion:nil];
+}
+
+
+-(NSInteger)numberOfSectionsInCollectionView:(UICollectionView *)collectionView
+{
+    if (collectionView.tag == 1001) {
+        
+        return 1;
+    }else if(collectionView.tag == 1002){
+        
+        return 1;
+    }else{
+        
+        return 3;
+    }
+}
+
+
+//UICollectionViewDelete方法
+-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section
+{
+    if (collectionView.tag == 1001) {
+        
+        return self.noticeArr.count;
+    }else if (collectionView.tag == 1002){
+
+        return [self.dataNewArr count];
+
+    }else{
+        if (section == 0) {
+            
+            return self.weekArr.count;
+        } else if(section == 1){
+            
+            return self.monthArr.count;
+        }else{
+            
+            return self.yearArr.count;
+        }
+    }
+}
+
+
+-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (collectionView.tag == 1001) {
+        
+        static NSString *cellID = @"noticeCell";
+        
+        Notice_Cell *noticeCell = [collectionView dequeueReusableCellWithReuseIdentifier:cellID forIndexPath:indexPath];
+        noticeCell.layer.borderWidth = 2;
+        noticeCell.layer.borderColor = RGBA(241, 118, 146, 1).CGColor;
+        
+        //生成视频缩略图
+        self.movieURL = [NSURL URLWithString:[[self.noticeArr objectAtIndex:indexPath.row] objectForKey:@"videos"]];
+        noticeCell.TVview.image = [UIImage imageWithVideo:self.movieURL];
+        
+        
+        NSString *headStr = [[self.noticeArr objectAtIndex:indexPath.row] objectForKey:@"touxiang"];
+        NSURL *url = [NSURL URLWithString:headStr];
+        NSData *data = [NSData dataWithContentsOfURL:url];
+        noticeCell.userHead.image = [UIImage imageWithData:data];
+        
+        
+        noticeCell.userName.text = [[self.noticeArr objectAtIndex:indexPath.row] objectForKey:@"nicheng"];
+        
+        
+        //时间格式2015-12-04 18：39：23
+        //得到当前系统时间
+        //特定时间
+        NSDateFormatter *date = [[NSDateFormatter alloc] init];
+        [date setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+        NSDate *d=[date dateFromString:[[self.noticeArr objectAtIndex:indexPath.row] objectForKey:@"time"]];
+        
+        NSTimeInterval late = [d timeIntervalSince1970]*1;
+        NSDate* dat = [NSDate dateWithTimeIntervalSinceNow:0];
+        NSTimeInterval now = [dat timeIntervalSince1970]*1;
+        NSString *timeString = [[self.noticeArr objectAtIndex:indexPath.row] objectForKey:@"time"];
+        
+        NSTimeInterval cha = now-late;
+        //liuxiaofeng
+        if(cha/60<1 &&cha/60>0) {
+            timeString = [NSString stringWithFormat:@"%f", cha];
+            timeString = [timeString substringToIndex:timeString.length-7];
+            timeString = @"刚刚";
+            noticeCell.timeLab.text = [NSString stringWithFormat:@"%@",timeString];
+        }
+        if (cha/3600<1) {
+            timeString = [NSString stringWithFormat:@"%f", cha/60];
+            timeString = [timeString substringToIndex:timeString.length-7];
+            timeString = [NSString stringWithFormat:@"%@分钟前", timeString];
+            noticeCell.timeLab.text = [NSString stringWithFormat:@"%@",timeString];
+        }
+        if (cha/3600>1&&cha/86400<1) {
+            timeString = [NSString stringWithFormat:@"%f", cha/3600];
+            timeString = [timeString substringToIndex:timeString.length-7];
+            timeString = [NSString stringWithFormat:@"%@小时前", timeString];
+            noticeCell.timeLab.text = [NSString stringWithFormat:@"%@",timeString];
+        }
+        if (cha/86400>1)
+        {
+            timeString = [NSString stringWithFormat:@"%f", cha/86400];
+            timeString = [timeString substringToIndex:timeString.length-7];
+            timeString = [NSString stringWithFormat:@"%@天前", timeString];
+            noticeCell.timeLab.text = [NSString stringWithFormat:@"%@",timeString];
+        }
+
+        
+        return noticeCell;
+        
+    }else if (collectionView.tag == 1002) {
+    
+        static NSString *cellID = @"squareCell";
+        
+        Square_Cell *squareCell = [collectionView dequeueReusableCellWithReuseIdentifier:cellID forIndexPath:indexPath];
+        squareCell.layer.borderWidth = 2;
+        squareCell.layer.borderColor = RGBA(241, 118, 146, 1).CGColor;
+
+        
+            //生成视频缩略图
+            self.movieURL = [NSURL URLWithString:[[self.dataNewArr objectAtIndex:indexPath.row] objectForKey:@"videos"]];
+
+            NSString *headStr = [[self.dataNewArr objectAtIndex:indexPath.row] objectForKey:@"touxiang"];
+            NSURL *url = [NSURL URLWithString:headStr];
+            NSData *data = [NSData dataWithContentsOfURL:url];
+            squareCell.userHead.image = [UIImage imageWithData:data];
+
+            squareCell.TVview.image = [UIImage imageWithVideo:self.movieURL];
+
+            squareCell.userName.text = [[self.dataNewArr objectAtIndex:indexPath.row] objectForKey:@"nicheng"];
+            
+            //时间格式2015-12-04 18：39：23
+            //得到当前系统时间
+            //特定时间
+            NSDateFormatter *date = [[NSDateFormatter alloc] init];
+            [date setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
+            NSDate *d=[date dateFromString:[[self.dataNewArr objectAtIndex:indexPath.row] objectForKey:@"time"]];
+            
+            NSTimeInterval late = [d timeIntervalSince1970]*1;
+            NSDate* dat = [NSDate dateWithTimeIntervalSinceNow:0];
+            NSTimeInterval now = [dat timeIntervalSince1970]*1;
+            NSString *timeString = [[self.dataNewArr objectAtIndex:indexPath.row] objectForKey:@"time"];
+            
+            NSTimeInterval cha = now-late;
+            //liuxiaofeng
+            if(cha/60<1 &&cha/60>0) {
+                timeString = [NSString stringWithFormat:@"%f", cha];
+                timeString = [timeString substringToIndex:timeString.length-7];
+                timeString = @"刚刚";
+                squareCell.timeLab.text = [NSString stringWithFormat:@"%@",timeString];
+            }
+            if (cha/3600<1) {
+                timeString = [NSString stringWithFormat:@"%f", cha/60];
+                timeString = [timeString substringToIndex:timeString.length-7];
+                timeString = [NSString stringWithFormat:@"%@分钟前", timeString];
+                squareCell.timeLab.text = [NSString stringWithFormat:@"%@",timeString];
+            }
+            if (cha/3600>1&&cha/86400<1) {
+                timeString = [NSString stringWithFormat:@"%f", cha/3600];
+                timeString = [timeString substringToIndex:timeString.length-7];
+                timeString = [NSString stringWithFormat:@"%@小时前", timeString];
+                squareCell.timeLab.text = [NSString stringWithFormat:@"%@",timeString];
+            }
+            if (cha/86400>1)
+            {
+                timeString = [NSString stringWithFormat:@"%f", cha/86400];
+                timeString = [timeString substringToIndex:timeString.length-7];
+                timeString = [NSString stringWithFormat:@"%@天前", timeString];
+                squareCell.timeLab.text = [NSString stringWithFormat:@"%@",timeString];
+            }
+        
+        return squareCell;
+
+    }else{
+        
+        static NSString *top = @"topCell";
+        Top_listCell *topCell = [collectionView dequeueReusableCellWithReuseIdentifier:top forIndexPath:indexPath];
+        topCell.layer.borderWidth = 2;
+        topCell.layer.borderColor = RGBA(151, 185, 217, 1).CGColor;
+        if (indexPath.section == 0) {
+            //生成视频缩略图
+            self.movieURL = [NSURL URLWithString:[[self.weekArr objectAtIndex:indexPath.row] objectForKey:@"videos"]];
+            topCell.TVview.image = [UIImage imageWithVideo:self.movieURL];
+            
+            
+            NSString *headStr = [[self.weekArr objectAtIndex:indexPath.row] objectForKey:@"touxiang"];
+            NSURL *url = [NSURL URLWithString:headStr];
+            NSData *data = [NSData dataWithContentsOfURL:url];
+            topCell.userHead.image = [UIImage imageWithData:data];
+            
+            
+            topCell.userName.text = [[self.weekArr objectAtIndex:indexPath.row] objectForKey:@"nicheng"];
+            
+//            topCell.loveNumLab.text = @"999人喜欢";
+
+        }else if (indexPath.section == 1){
+            
+            //生成视频缩略图
+            self.movieURL = [NSURL URLWithString:[[self.monthArr objectAtIndex:indexPath.row] objectForKey:@"videos"]];
+            topCell.TVview.image = [UIImage imageWithVideo:self.movieURL];
+            
+            
+            NSString *headStr = [[self.monthArr objectAtIndex:indexPath.row] objectForKey:@"touxiang"];
+            NSURL *url = [NSURL URLWithString:headStr];
+            NSData *data = [NSData dataWithContentsOfURL:url];
+            topCell.userHead.image = [UIImage imageWithData:data];
+            
+            
+            topCell.userName.text = [[self.monthArr objectAtIndex:indexPath.row] objectForKey:@"nicheng"];
+            
+//            topCell.loveNumLab.text = @"999人喜欢";
+
+        }else{
+            
+            //生成视频缩略图
+            self.movieURL = [NSURL URLWithString:[[self.yearArr objectAtIndex:indexPath.row] objectForKey:@"videos"]];
+            topCell.TVview.image = [UIImage imageWithVideo:self.movieURL];
+            
+            
+            NSString *headStr = [[self.yearArr objectAtIndex:indexPath.row] objectForKey:@"touxiang"];
+            NSURL *url = [NSURL URLWithString:headStr];
+            NSData *data = [NSData dataWithContentsOfURL:url];
+            topCell.userHead.image = [UIImage imageWithData:data];
+            
+            
+            topCell.userName.text = [[self.yearArr objectAtIndex:indexPath.row] objectForKey:@"nicheng"];
+            
+            topCell.loveNumLab.text = @"999人喜欢";
+
+        }
+        return topCell;
+    }
+}
+
+
+
+- (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout*)collectionViewLayout referenceSizeForHeaderInSection:(NSInteger)section
+{
+    if (collectionView.tag == 1001) {
+        
+        CGSize size = {0,0};
+        return size;
+
+    }else if (collectionView.tag == 1002){
+    
+        CGSize size = {0,0};
+        return size;
+    } else {
+        
+        if (section == 0) {
+            
+            CGSize size = {ScreenWidth,70};
+            return size;
+        } else if(section == 1){
+            
+            CGSize size = {ScreenWidth,70};
+            return size;
+        }else{
+            
+            CGSize size = {ScreenWidth,90};
+            
+            return size;
+        }
+    }
+}
+
+
+// 用来设置页眉、页脚控件内容
+- (UICollectionReusableView *)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
+{
+    if(collectionView.tag == 1001){
+        
+        return nil;
+    } else if (collectionView.tag == 1002){
+        
+        return nil;
+    }else{
+        // 可复用的字符串标记符
+        static NSString *headId = @"headCell";
+        
+        // 创建一个UICollectionReusableView *（容器类）对象
+        UICollectionReusableView *view = nil;
+        
+        
+        if (indexPath.section == 0) {
+            
+            // 设置页眉控件
+            if (kind == UICollectionElementKindSectionHeader)
+            {
+                view = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:headId forIndexPath:indexPath];
+                UIImageView *imgView = (UIImageView *)[view viewWithTag:1];
+                imgView.frame = CGRectMake(63, 13, ScreenWidth-126, 55) ;
+                imgView.image = [UIImage imageNamed:@"weekList"];
+                
+                
+                UILabel *titleLab = (UILabel *)[view viewWithTag:2];
+                titleLab.frame = CGRectMake((imgView.frame.size.width-35)/2, 25, 35, 15);
+                titleLab.text = @"周   榜";
+                titleLab.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                titleLab.textColor = RGBA(89, 87, 87, 1);
+            }
+        } else if(indexPath.section == 1){
+            
+            // 设置页眉控件
+            if (kind == UICollectionElementKindSectionHeader)
+            {
+                view = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:headId forIndexPath:indexPath];
+                UIImageView *imgView = (UIImageView *)[view viewWithTag:1];
+                imgView.frame = CGRectMake(63, 13, ScreenWidth-126, 55) ;
+                imgView.image = [UIImage imageNamed:@"monthList"];
+                
+                UILabel *titleLab = (UILabel *)[view viewWithTag:2];
+                titleLab.frame = CGRectMake((imgView.frame.size.width-35)/2, 25, 35, 15);
+                titleLab.text = @"月   榜";
+                titleLab.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                titleLab.textColor = RGBA(89, 87, 87, 1);
+                
+            }
+        }else{
+            
+            // 设置页眉控件
+            if (kind == UICollectionElementKindSectionHeader)
+            {
+                view = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:headId forIndexPath:indexPath];
+                UIImageView *imgView = (UIImageView *)[view viewWithTag:1];
+                imgView.frame = CGRectMake(35, 13, ScreenWidth-70, 75) ;
+                imgView.image = [UIImage imageNamed:@"yearList"];
+                
+                UILabel *titleLab = (UILabel *)[view viewWithTag:2];
+                titleLab.frame = CGRectMake((imgView.frame.size.width-35)/2, 33, 35, 15);
+                titleLab.text = @"年 榜";
+                titleLab.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:15];
+                titleLab.textColor = RGBA(89, 87, 87, 1);
+            }
+        }
+        
+        return view;
+    }
+}
+
+
+-(void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (collectionView.tag == 1001) {
+        
+        SquareChild_VC *squareChild = [[SquareChild_VC alloc] init];
+        squareChild.cellID = [[self.noticeArr objectAtIndex:indexPath.row] objectForKey:@"id"];
+        NSLog(@"===%@",squareChild.cellID);
+        squareChild.videoUserID = [[self.noticeArr objectAtIndex:indexPath.row] objectForKey:@"userid"];
+        NSLog(@"----%@",squareChild.videoUserID);
+        [self.navigationController pushViewController:squareChild animated:YES];
+    } else {
+        
+        SquareChild_VC *squareChild = [[SquareChild_VC alloc] init];
+        squareChild.cellID = [[self.dataNewArr objectAtIndex:indexPath.row] objectForKey:@"id"];
+        NSLog(@"----%@",squareChild.cellID);
+
+        squareChild.videoUserID = [[self.dataNewArr objectAtIndex:indexPath.row] objectForKey:@"userid"];
+        NSLog(@"====%@",squareChild.videoUserID);
+
+        [self.navigationController pushViewController:squareChild animated:YES];
+    }
+}
+
+/*
+chakanzongshu = 116;
+dianzanzongshu = 1;
+diqu = "";
+id = 37;
+neirong = "\U5728\U5bb6\U65e0\U804a";
+nicheng = "\U4f60\U597d";
+pinglunzongshu = 41;
+time = "2015-07-14 11:25:23";
+touxiang = "http://101.200.234.127:8080/YanLu/user/20150715163514image.png";
+userid = 1;
+videos = "http://101.200.234.127:8080/YanLu/upload/2015071411250420150714112507video.mp4";
+ */
+/*
+guserid = 1;
+id = 367;
+nicheng = "\U4f60\U597d";
+time = "2015-07-14 11:25:23";
+touxiang = "http://101.200.234.127:8080/YanLu/user/20150715163514image.png";
+userid = 1;
+videos = "http://101.200.234.127:8080/YanLu/upload/2015071411250420150714112507video.mp4";
+*/
+@end

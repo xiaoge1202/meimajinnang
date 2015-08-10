@@ -1,0 +1,48 @@
+//
+//  SquareChild-VC.h
+//  燕庐母婴
+//
+//  Created by 董飞剑 on 15/6/26.
+//  Copyright (c) 2015年 燕庐科技. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+#import "PrefixHeader.pch"
+#import "SquareShow-Cell.h"
+#import "SquareChild-Cell.h"
+#import <MediaPlayer/MediaPlayer.h>
+#import "AFHTTPRequestOperationManager.h"
+#import "UIImage+Video.h"
+@interface SquareChild_VC : UIViewController<UITableViewDataSource,UITableViewDelegate,UITextFieldDelegate>
+{
+    CGSize size;
+    CGSize size1;
+
+    NSUserDefaults *_user;
+    NSString *_userId;
+    SquareShow_Cell *showCell;
+}
+@property (nonatomic,strong) AFHTTPRequestOperationManager *manager;
+
+@property (strong,nonatomic) UIButton *gobackBtn;//返回按钮
+//该视频的用户id
+@property (strong,nonatomic) NSString *videoUserID;
+//该视频的id
+@property (strong,nonatomic) NSString *cellID;
+@property (strong,nonatomic) UITableView *tableView;
+@property (strong,nonatomic) UIView *headView;
+@property (strong,nonatomic) UIImageView *userHead; //用户头像
+@property (strong,nonatomic) UILabel *userName;//用户昵称
+@property (strong,nonatomic) UILabel *timelabel;//发布时间
+
+@property (strong,nonatomic) MPMoviePlayerController *moviePlayerCtl;
+@property (strong,nonatomic) UIImageView *imgView;//视频缩略图
+@property (strong,nonatomic) UIButton *playBtn;//播放按钮
+
+
+@property (strong,nonatomic) UIView *toolBar;
+@property (strong,nonatomic) UITextField *textField;//回复框
+@property (strong,nonatomic) UIButton *sendBtn;//回复按钮
+
+
+@end

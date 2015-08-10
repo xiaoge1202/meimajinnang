@@ -1,0 +1,85 @@
+//
+//  MyTieziTableViewCell.m
+//  燕庐母婴
+//
+//  Created by 侯泽彭 on 15/6/18.
+//  Copyright (c) 2015年 燕庐科技. All rights reserved.
+//
+
+#import "MyTieziTableViewCell.h"
+
+@implementation MyTieziTableViewCell
+
+- (void)awakeFromNib {
+    // Initialization code
+}
+
+-(instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier{
+    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
+    if (self) {
+        self.touxiangImg = [[UIImageView alloc] initWithFrame:CGRectMake(6, 9, 25, 25)];
+        [self addSubview:self.touxiangImg];
+        
+        self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.touxiangImg.frame.origin.x+self.touxiangImg.frame.size.width+5, 11, 120, 10)];
+        self.nameLabel.textColor = RGBA(98, 97, 97, 1);
+        self.nameLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:10];
+        [self addSubview:self.nameLabel];
+        
+        self.neirongLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, self.touxiangImg.frame.origin.y+self.touxiangImg.frame.size.height+10, ScreenWidth-36, 12)];
+        self.neirongLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+        [self addSubview:self.neirongLabel];
+        
+        self.timeLabel = [[UILabel alloc] initWithFrame:CGRectMake(self.touxiangImg.frame.origin.x+self.touxiangImg.frame.size.width+5, self.nameLabel.frame.origin.y+self.nameLabel.frame.size.height+5, 120, 10)];
+        self.timeLabel.textColor = RGBA(98, 97, 97, 1);
+        self.timeLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:10];
+        [self addSubview:self.timeLabel];
+        
+        
+        self.shoucangImg = [[UIImageView alloc]initWithFrame:CGRectMake(15, self.neirongLabel.frame.origin.y+self.neirongLabel.frame.size.height+15, 11, 11)];
+        self.shoucangImg.image = [UIImage imageNamed:@"weishoucang"];
+        [self addSubview:self.shoucangImg];
+        
+        self.shoucangLable = [[UILabel alloc]initWithFrame:CGRectMake(self.shoucangImg.frame.origin.x+self.shoucangImg.frame.size.width+10, self.shoucangImg.frame.origin.y, 30, 12)];
+        self.shoucangLable.textColor = RGBA(137, 137, 137, 1);
+        self.shoucangLable.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:10];
+        [self addSubview:self.shoucangLable];
+        
+        self.zhuanfaImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.shoucangLable.frame.origin.x+self.shoucangLable.frame.size.width+30, self.shoucangImg.frame.origin.y+2, 11, 8)];
+        self.zhuanfaImg.image = [UIImage imageNamed:@"see"];
+        [self addSubview:self.zhuanfaImg];
+        
+        self.zhuanfacountLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.zhuanfaImg.frame.origin.x+self.zhuanfaImg.frame.size.width+10, self.shoucangImg.frame.origin.y, 30, 12)];
+        self.zhuanfacountLabel.textColor = RGBA(137, 137, 137, 1);
+        self.zhuanfacountLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:10];
+        [self addSubview:self.zhuanfacountLabel];
+        
+        //信息图片与条数
+        self.messageImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.zhuanfacountLabel.frame.origin.x+self.zhuanfacountLabel.frame.size.width+30, self.shoucangImg.frame.origin.y+2, 10, 8)];
+        self.messageImg.image = [UIImage imageNamed:@"未标题-1-03"];
+        [self addSubview:self.messageImg];
+        
+        self.messageLab = [[UILabel alloc]initWithFrame:CGRectMake(self.messageImg.frame.origin.x+self.messageImg.frame.size.width+10, self.shoucangImg.frame.origin.y, 30, 12)];
+        self.messageLab.textColor = RGBA(137, 137, 137, 1);
+        self.messageLab.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:10];
+        [self addSubview:self.messageLab];
+        
+        self.dianzanImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.messageLab.frame.origin.x+self.messageLab.frame.size.width+30, self.shoucangImg.frame.origin.y+2, 10, 9)];
+        self.dianzanImg.image = [UIImage imageNamed:@"未标题-1-08"];
+        [self addSubview:self.dianzanImg];
+        
+        self.dianzanLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.dianzanImg.frame.origin.x+self.dianzanImg.frame.size.width+10, self.shoucangImg.frame.origin.y, 30, 12)];
+        self.dianzanLabel.textColor = RGBA(137, 137, 137, 1);
+        self.dianzanLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:10];
+        [self addSubview:self.dianzanLabel];
+        
+    }
+    return self;
+}
+
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
+@end
