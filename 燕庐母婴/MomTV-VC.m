@@ -65,9 +65,11 @@ NSInteger i = 0;
         }
         
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        
         NSLog(@"连接服务错误");
     }];
 }
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -177,8 +179,6 @@ NSInteger i = 0;
     [self initWithSquareView];
     [self initWithListView];
     
-    //    self.picker = [[UIImagePickerController alloc]init];
-    //    self.picker.delegate = self;
     
     // 3.1.下拉刷新
     [self addHeader];
@@ -211,7 +211,6 @@ NSInteger i = 0;
     };
     _footer = footer;
 }
-
 
 
 - (void)addHeader
@@ -302,6 +301,7 @@ NSInteger i = 0;
     self.noticeCollection.delegate = self;
     self.noticeCollection.dataSource = self;
     self.noticeCollection.tag = 1001;
+    self.noticeCollection.pagingEnabled = NO;
     self.noticeCollection.backgroundColor = RGBA(255, 255, 255, 1);
     [self.noticeView addSubview:self.noticeCollection];
     
@@ -330,6 +330,7 @@ NSInteger i = 0;
     self.squareCollection.delegate = self;
     self.squareCollection.dataSource = self;
     self.squareCollection.tag = 1002;
+    self.squareCollection.pagingEnabled = NO;
     self.squareCollection.backgroundColor = RGBA(255, 255, 255, 1);
     [self.squareView addSubview:self.squareCollection];
     
@@ -480,10 +481,6 @@ NSInteger i = 0;
 //上传视频
 -(void)cameraBtnClick
 {
-    
-//    self.actionSheet = [[UIActionSheet alloc] initWithTitle:nil delegate:self cancelButtonTitle:@"取消" destructiveButtonTitle:nil otherButtonTitles:@"录像", @"从视频库中选取", nil];
-//    [self.actionSheet showInView:self.view];
-    
     UIImagePickerController* pickerView = [[UIImagePickerController alloc] init];
     pickerView.sourceType = UIImagePickerControllerSourceTypeCamera;
     NSArray* availableMedia = [UIImagePickerController availableMediaTypesForSourceType:UIImagePickerControllerSourceTypeCamera];

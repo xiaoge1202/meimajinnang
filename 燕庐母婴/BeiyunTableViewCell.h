@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "PrefixHeader.pch"
 @interface BeiyunTableViewCell : UITableViewCell
-
+@property (nonatomic,strong) UIImageView *imgView;
+@property (nonatomic,strong) UILabel *titleLabel;
+@property (nonatomic,strong) UIImageView *nameImg;
+@property (nonatomic,strong) UILabel *nameLabel;
+@property (nonatomic,strong) UIImageView *liulanImg;
+@property (nonatomic,strong) UILabel *liulanLabel;
 @end

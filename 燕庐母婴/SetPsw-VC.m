@@ -16,22 +16,78 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
+    self.view.backgroundColor = RGBA(239, 239, 239, 1);
+
+//    /*----------导航栏添加图片-----------*/
+//    UIView *head = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 20)];
+//    head.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
+//    [self.navigationController.view addSubview:head];
+    
+    //首先创建一个view
+    UIView *view = [[UIView alloc]initWithFrame:CGRectMake(0, 20, ScreenWidth, 44)];
+    [self.navigationController.view addSubview:view];
+    
+    
+    //然后创建一个Imgview添加到view上
+    UIImageView *imageV = [[UIImageView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 44)];
+    imageV.image = [UIImage imageNamed:@"导航栏"];
+    [view addSubview:imageV];
+    
+    //最后创建一个label添加到imgView上
+    UILabel *label = [[UILabel alloc]initWithFrame:CGRectMake((ScreenWidth-120)/2, 5, 120, 35)];
+    label.textColor = [UIColor whiteColor];
+    label.text = @"设 置 密 码";
+    label.textAlignment = NSTextAlignmentCenter;
+    label.font = [UIFont systemFontOfSize:22];
+    [imageV addSubview:label];
+    
+    
+    //返回按钮
+    UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    backBtn.frame = CGRectMake(20, 14, 16, 20);
+    [backBtn setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+    [backBtn addTarget:self action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
+    [self.navigationController.view addSubview:backBtn];
+    
+    
+    self.passwordField = [[UITextField alloc] initWithFrame:CGRectMake(10, 74, self.view.frame.size.width-20, 40)];
+    self.passwordField.tag = 1002;
+    self.passwordField.placeholder = @"6-14位数字或数字字母组合";
+    self.passwordField.borderStyle = UITextBorderStyleRoundedRect;
+    [self.view addSubview:self.passwordField];
+    
+    
+    self.notarizePasswordField = [[UITextField alloc] initWithFrame:CGRectMake(10, self.passwordField.frame.origin.y+self.passwordField.frame.size.height+6, self.view.frame.size.width-20, 40)];
+    self.notarizePasswordField.tag = 1003;
+    self.notarizePasswordField.placeholder = @"确认密码";
+    self.notarizePasswordField.borderStyle = UITextBorderStyleRoundedRect;
+    [self.view addSubview:self.notarizePasswordField];
+    
+    
+    self.putinBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [self.putinBtn setFrame:CGRectMake(10, self.notarizePasswordField.frame.origin.y+self.notarizePasswordField.frame.size.height +6 , ScreenWidth-20, 40)];
+    [self.view addSubview:self.putinBtn];
+    [self.putinBtn setTitle:@"确      定" forState:UIControlStateNormal];
+    [self.putinBtn addTarget:self action:@selector(buttonClickSure)forControlEvents:UIControlEventTouchUpInside];
+    [self.putinBtn setTitleColor:RGBA(46, 44, 42, 1) forState:UIControlStateNormal];
+    self.putinBtn.titleLabel.font = [UIFont systemFontOfSize:20];
+    [self.putinBtn setBackgroundColor:RGBA(241, 118, 146, 1)];
+    self.putinBtn.layer.borderWidth = 1;
+    self.putinBtn.layer.masksToBounds = YES;
+    self.putinBtn.layer.cornerRadius = 5;
+    self.putinBtn.layer.borderColor = RGBA(226, 226, 226, 1).CGColor;
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+//返回上一页
+-(void)goBack
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-/*
-#pragma mark - Navigation
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
+-(void)buttonClickSure
+{
+    
 }
-*/
-
 @end

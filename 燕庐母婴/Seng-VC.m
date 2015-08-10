@@ -35,9 +35,9 @@
     self.navigationItem.title = @"发 帖";
     
     /*-------------状态栏改变背景颜色-----------*/
-    UIView *head = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 20)];
-    head.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-    [self.navigationController.view addSubview:head];
+//    UIView *head = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 20)];
+//    head.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
+//    [self.navigationController.view addSubview:head];
     
     
     //取消导航栏和状态栏的边缘延展效果
@@ -50,8 +50,8 @@
     //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     //返回按钮
     self.backBtutton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.backBtutton.frame = CGRectMake(0, 14, 16, 20);
-    [self.backBtutton setBackgroundImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    self.backBtutton.frame = CGRectMake(20, 14, 16, 20);
+    [self.backBtutton setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [self.backBtutton addTarget:self action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.backBtutton];
     self.navigationItem.leftBarButtonItem = leftItem;

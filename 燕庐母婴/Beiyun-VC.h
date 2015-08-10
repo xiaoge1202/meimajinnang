@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
-
-@interface Beiyun_VC : UIViewController
-
+#import "PrefixHeader.pch"
+#import "BeiyunTableViewCell.h"
+#import "Neirong-VC.h"
+@interface Beiyun_VC : UIViewController<UITableViewDataSource,UITableViewDelegate>
+@property (nonatomic,strong) UITableView *tableView;
+@property (nonatomic,strong) NSString *title;
 @end

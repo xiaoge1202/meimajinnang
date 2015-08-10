@@ -45,15 +45,16 @@
 //    [self.tableView reloadData];
     [self getud];
     [self titleImage];
+    [self.tableView reloadData];
 }
 
 -(void)getud
 {
     self.ud = [NSUserDefaults standardUserDefaults];
     str = [self.ud objectForKey:@"huaiyuntime"];
-    //NSLog(@"%@",str);
+    NSLog(@"%@",str);
     huaiyuntianshu = [self.ud objectForKey:@"huaiyuntianshu"];
-    NSLog(@"%@",[self.ud objectForKey:@"zhuangtai"]);
+    NSLog(@"11111%@",[self.ud objectForKey:@"zhuangtai"]);
     zhuangtai = [self.ud objectForKey:@"zhuangtai"];
 }
 
@@ -109,23 +110,23 @@
         self.todayMustReadArr =[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         NSLog(@"222------%@",self.todayMustReadArr);
         
-        if (self.todayMustReadArr.count>0) {
-            [[TodayMustReadData sharedImage] openPphoto];
-            NSArray *array = [[TodayMustReadData sharedImage] findAll];
-            if (array.count > 0) {
-            for (int i = 0; i<self.todayMustReadArr.count; i++) {
-                [[TodayMustReadData sharedImage] deleteImg:[[self.todayMustReadArr objectAtIndex:i] objectForKey:@"tupian"]];
-            }
-            }
-            
-            for (int i = 0; i<self.todayMustReadArr.count; i++) {
-                
-                [[TodayMustReadData sharedImage] addImage:[[self.todayMustReadArr objectAtIndex:i] objectForKey:@"tupian"]];
-            }
-            self.todayMustReadImgArr = [[TodayMustReadData sharedImage] findAll];
-            NSLog(@"img====================%@",self.todayMustReadImgArr);
-            [[TodayMustReadData sharedImage] closePphoto];
-        }
+//        if (self.todayMustReadArr.count>0) {
+//            [[TodayMustReadData sharedImage] openPphoto];
+//            NSArray *array = [[TodayMustReadData sharedImage] findAll];
+//            if (array.count > 0) {
+//            for (int i = 0; i<self.todayMustReadArr.count; i++) {
+//                [[TodayMustReadData sharedImage] deleteImg:[[self.todayMustReadArr objectAtIndex:i] objectForKey:@"tupian"]];
+//            }
+//            }
+//            
+//            for (int i = 0; i<self.todayMustReadArr.count; i++) {
+//                
+//                [[TodayMustReadData sharedImage] addImage:[[self.todayMustReadArr objectAtIndex:i] objectForKey:@"tupian"]];
+//            }
+//            self.todayMustReadImgArr = [[TodayMustReadData sharedImage] findAll];
+//            NSLog(@"img====================%@",self.todayMustReadImgArr);
+//            [[TodayMustReadData sharedImage] closePphoto];
+//        }
 //            self.allshuoshuoArr = [[ShuoshuoDataBase sharedShuoshuo] findAll];
         
         
@@ -307,20 +308,24 @@
     
     btnArr = [[NSMutableArray alloc] init];
     imgArr = [[NSMutableArray alloc] init];
-    /*-------------状态栏改变背景颜色-----------*/
-//    UIView *head = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 20)];
-//    head.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-//    [self.navigationController.view addSubview:head];
+
     
-//    UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 24)];
-//    view.backgroundColor = [UIColor redColor];
-//    [self.navigationController.navigationBar.superview addSubview:view];
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"导航栏"] forBarMetrics:UIBarMetricsDefault];
+    /*-------------状态栏改变背景颜色-----------*/
+    UIView *head = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 20)];
+    head.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
+    [self.navigationController.view addSubview:head];
+    
+    self.view.backgroundColor = RGBA(235, 235, 235, 1);
     
     self.tableArr = @[@"宝宝成长记录",@"今日必做事项",@"今日必读知识",@"本周必备物品",@"本周注意事项",@"今题随手记"];
 
     [self titleImage];
     [self creatTableView];
+    
+    
 }
+
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -375,17 +380,19 @@
     UILabel *babyLabel = [[UILabel alloc] initWithFrame:CGRectMake(touxiangImageView.frame.origin.x+touxiangImageView.frame.size.width+10, touxiangImageView.frame.origin.y, ScreenWidth-touxiangImageView.frame.size.width-20, touxiangImageView.frame.size.height)];
     babyLabel.numberOfLines = 5;
 //    babyLabel.text = @"    在准妈妈的肚子里，胎宝宝的变化速度非常快。到本周，胎宝宝差不多有一个葡萄干那么重，它的顶臀长现在大约有2-4厘米，顶臀长是指胎宝宝的坐高或者是胎宝宝的头顶到臀部之间的距离。";
+  //  NSLog(@"%ld",self.babyGrowArr.count);
     babyLabel.text = [NSString stringWithFormat:@"   %@",[[self.babyGrowArr objectAtIndex:0] objectForKey:@"zhishi"]];
+    
     babyLabel.font = [UIFont fontWithName:nil size:12];
     babyLabel.textColor = [UIColor grayColor];
     
     UIButton *TVButton1 = [UIButton buttonWithType:UIButtonTypeCustom];
-    TVButton1.frame = CGRectMake(2, 4, 157, 78);
+    TVButton1.frame = CGRectMake(2, 4, (ScreenWidth-6)/2, 78);
     [TVButton1 setImage:[UIImage imageNamed:@"视频搜索"] forState:UIControlStateNormal];
     [TVButton1 addTarget:self action:@selector(clickTV1Btn) forControlEvents:UIControlEventTouchUpInside];
     
     UIButton *TVButton2 = [UIButton buttonWithType:UIButtonTypeCustom];
-    TVButton2.frame = CGRectMake(TVButton1.frame.origin.x+TVButton1.frame.size.width+2, 4, 157, 78);
+    TVButton2.frame = CGRectMake(TVButton1.frame.origin.x+TVButton1.frame.size.width+2, 4, (ScreenWidth-6)/2, 78);
     [TVButton2 setImage:[UIImage imageNamed:@"TV"] forState:UIControlStateNormal];
     [TVButton2 addTarget:self action:@selector(clickTV2Btn) forControlEvents:UIControlEventTouchUpInside];
     
@@ -470,11 +477,18 @@
             
         case 4:
             [cell.contentView addSubview:label];
+//            label.text = [[self.weekAttentionArr objectAtIndex:indexPath.row] objectForKey:@"neirong"];
+            
+            
             label.text = [[self.weekAttentionArr objectAtIndex:indexPath.row] objectForKey:@"neirong"];
+
             group4=[[NSDictionary alloc]initWithObjectsAndKeys:indexPath,@"indexpath",cell,@"cell", nil];
             [NSThread detachNewThreadSelector:@selector(loadLabelTableView:) toTarget:self withObject:group4];
-//            [cell addSubview:imgView];
+            [cell addSubview:imgView];
 //            imgView.image = [UIImage imageNamed:[[self.weekAttentionArr objectAtIndex:indexPath.row] objectForKey:@"tupian"]];
+            
+            imgView.image = [UIImage imageNamed:@"666.jpg"];
+            
             break;
             
         case 5:
@@ -572,7 +586,7 @@
     
     if (section == 0) {
         UIImageView *headerView1 = [[UIImageView alloc] initWithFrame:CGRectMake(0, 140, ScreenWidth, 40)];
-        headerView1.image = [UIImage imageNamed:@"850-01"];
+        headerView1.image = [UIImage imageNamed:@"section"];
         //headerView1.backgroundColor = RGBA(245, 178, 178,1);
         
         UILabel *label1 = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 150, 40)];
@@ -591,7 +605,7 @@
     else
     {
         UIImageView *headerView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 38)];
-        headerView.image = [UIImage imageNamed:@"850-01"];
+        headerView.image = [UIImage imageNamed:@"section"];
         //headerView.backgroundColor = RGBA(245, 178, 178,1);
         
         UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, 150, 40)];
@@ -741,14 +755,14 @@
 
 -(void)clickTV1Btn
 {
-    AppDelegate *app = [UIApplication sharedApplication].delegate;
-    app.tab.selectedIndex = 2;
+//    AppDelegate *app = [UIApplication sharedApplication].delegate;
+//    app.tab.selectedIndex = 2;
 }
 
 -(void)clickTV2Btn
 {
-    AppDelegate *app = [UIApplication sharedApplication].delegate;
-    app.tab.selectedIndex = 4;
+//    AppDelegate *app = [UIApplication sharedApplication].delegate;
+//    app.tab.selectedIndex = 4;
 }
 
 -(void)clickdeleBtn2:(UIButton*)btn

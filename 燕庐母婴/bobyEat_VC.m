@@ -49,7 +49,7 @@
         NSData *data =(NSData *)responseObject;
         array = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         
-        NSLog(@"辅食详细信息 = %@",array);
+        NSLog(@"666详细信息 = %@",array);
         self.infoArray=array;
         NSLog(@"%@",self.infoArray);
         for(int i=0;i<array.count;i++){
@@ -59,19 +59,32 @@
                 NSData *data =(NSData *)responseObject;
                 array1 = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
                 
-                NSLog(@"辅食详细信息 = %@",array1);
-                [idArray addObject:array1];
-                NSLog(@"%@",idArray);
-                [tableview reloadData];
+                NSLog(@"我的辅食详细信息 = %@",array1);
+                if (array1.count == 0) {
+                        [idArray addObject:[idArray objectAtIndex:0]];
+                }
+                else
+                {
+                    [idArray addObject:array1];
+                }
+                
+                if (idArray.count == array.count) {
+                    [tableview reloadData];
+                }
+                
+                NSLog(@"miss%@",idArray);
+                
                 
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 NSLog(@"失败");
             }];
-            [idArray addObject:array1];
+            //[idArray addObject:array1];
 
-            NSLog(@"%@",idArray);
+            
 
         }
+        
+        
         NSLog(@"%@",idArray);
 
     }failure:^(AFHTTPRequestOperation *operation, NSError *error) {
@@ -111,9 +124,9 @@
     self.infoArray=[[NSMutableArray alloc]initWithCapacity:0];
     [super viewDidLoad];
     [self AFNetworking];
-    [self AFNetworkings];
+    //[self AFNetworkings];
     
-   
+    //self.view.backgroundColor = [UIColor whiteColor];
     //self.infoArray=[[NSMutableArray alloc]initWithCapacity:0];
     // Do any additional setup after loading the view.
     
@@ -134,16 +147,17 @@
     [backBtn addTarget:self action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
     self.navigationItem.leftBarButtonItem = leftItem;
-    tableview=[[UITableView alloc]initWithFrame:CGRectMake(0,0, self.view.frame.size.width, self.view.frame.size.height-69) style:UITableViewStylePlain];
+    
+    tableview=[[UITableView alloc]initWithFrame:CGRectMake(0,0, self.view.frame.size.width, self.view.frame.size.height-59) style:UITableViewStylePlain];
     tableview.delegate=self;
     tableview.dataSource = self;
-//    tableview.tablefooterView = [UIView alloc] init];
+    //    tableview.tablefooterView = [UIView alloc] init];
     tableview.tableFooterView=[[UIView alloc]init];
     tableview.backgroundColor=RGBA(235, 235, 235, 1);
     [self.view addSubview:tableview];
     
     [self getud];
-    [tableview reloadData];
+    //[tableview reloadData];
     UIView *v = [[UIView alloc] initWithFrame:CGRectMake(0, 0, tableview.frame.size.width, 1)];
     v.backgroundColor = [UIColor whiteColor];
     //[tableView setTableFooterView:v];
@@ -184,12 +198,12 @@
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    for(int i=0;i<array.count;i++){
-        if(section==i){
-            return array1.count;
-        }
-    }
-    return 10;
+//    for(int i=0;i<array.count;i++){
+//        if(section==i){
+            return ((NSArray*)[idArray objectAtIndex:section]).count;
+//        }
+//    }
+//    return 10;
 }
 
 
@@ -229,13 +243,15 @@
 //划线
     cell1.selectionStyle = UITableViewCellSelectionStyleNone;
     tableView.separatorStyle=UITableViewCellSeparatorStyleNone;
-    if(indexPath.section==0 && indexPath.row==0){
-    cell1.xian.backgroundColor=RGBA(235, 235, 235, 1);
-    }else if(indexPath.section==1&& indexPath.row==3){
-    cell1.xian.backgroundColor=RGBA(235, 235, 235, 1);
-    }else{
-    cell1.xian.backgroundColor=RGBA(201, 201, 201, 1);
+    
+    if (indexPath.row == ((NSArray*)[idArray objectAtIndex:indexPath.section]).count-1) {
+        cell1.xian.backgroundColor=RGBA(235, 235, 235, 1);
     }
+    else
+    {
+        cell1.xian.backgroundColor=RGBA(201, 201, 201, 1);
+    }
+    
     //得到当前时间
     NSDate *  senddate=[NSDate date];
     
@@ -260,7 +276,7 @@
      2.判断宝宝多少每一岁的多少月
      3.宝宝在每个月下的多少天
      */
-    NSLog(@"==%d",[[[_infoArray objectAtIndex:1] objectForKey:@"days"] intValue]);
+    NSLog(@"11==%d",[[[_infoArray objectAtIndex:1] objectForKey:@"days"] intValue]);
     if(indexPath.section==0){
         if([[[_infoArray objectAtIndex:1] objectForKey:@"days"] intValue]==5){
             //当前时间选中状态
@@ -285,16 +301,16 @@
         cell1.btnSegmentrect.layer.borderColor=RGBA(122, 165, 217, 0.8).CGColor;
     }
     //显示数据
-    for(int i=0;i<array.count;i++){
-        if(indexPath.section==i){
+//    for(int i=0;i<array.count;i++){
+//        if(indexPath.section==i){
+    
+    NSLog(@"我是%@",idArray);
+                    cell1.lbInfoContent.text=[NSString stringWithFormat:@"%@",[[[idArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row] objectForKey:@"title"]];
+                    NSLog(@"宝宝%@",[[[idArray objectAtIndex:0] objectAtIndex:indexPath.row] objectForKey:@"title"]);
             
             
-                    cell1.lbInfoContent.text=[NSString stringWithFormat:@"%@",[[array1 objectAtIndex:indexPath.row] objectForKey:@"title"]];
-                    NSLog(@"宝宝%@",[[array1 objectAtIndex:indexPath.row] objectForKey:@"title"]);
-            
-            
-                    cell1.lbTime.text=[[array1 objectAtIndex:indexPath.row] objectForKey:@"days"];
-                }    }
+                    cell1.lbTime.text=[[[idArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row] objectForKey:@"days"];
+               // }    }
 
     
 //    if(indexPath.row==0){

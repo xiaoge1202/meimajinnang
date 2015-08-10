@@ -57,9 +57,9 @@
     
     self.navigationItem.title = @"全部帖子";
     
-    self.view.backgroundColor = RGBA(239, 239, 239, 1);
-
     self.view.backgroundColor = RGBA(235, 235, 235, 1);
+    
+    
     //取消导航栏和状态栏的边缘延展效果
     self.modalPresentationCapturesStatusBarAppearance = NO;
     self.edgesForExtendedLayout = UIRectEdgeNone;
@@ -68,7 +68,7 @@
     //返回按钮
     self.backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     self.backBtn.frame = CGRectMake(20, 14, 16, 20);
-    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [self.backBtn addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.backBtn];
     self.navigationItem.leftBarButtonItem = leftItem;

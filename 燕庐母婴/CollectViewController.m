@@ -26,6 +26,7 @@
         NSData *data = (NSData*)responseObject;
         self.zhishiArr = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         [self.zhishiTableView reloadData];
+        NSLog(@"知识＝＝＝%@",self.zhishiArr);
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"获取失败");
     }];
@@ -44,7 +45,7 @@
 -(void)viewWillAppear:(BOOL)animated
 {
     [self AFNetworking];
-    NSLog(@"收藏＝＝＝%@",self.zhishiArr);
+    //NSLog(@"收藏＝＝＝%@",self.zhishiArr);
 }
 
 - (void)viewDidLoad {
@@ -52,12 +53,19 @@
     
     self.navigationItem.title = @"我 的 收 藏";
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"导航栏"] forBarMetrics:UIBarMetricsDefault];
-    self.view.backgroundColor = [UIColor whiteColor];
+    
+    /*-------------状态栏改变背景颜色-----------*/
+//    UIView *head = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 20)];
+//    head.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
+//    [self.navigationController.view addSubview:head];
+    
+    self.view.backgroundColor = RGBA(235, 235, 235, 1);
+
     
     //返回按钮
     self.backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.backBtn.frame = CGRectMake(20, 14, 16, 20);
-    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    self.backBtn.frame = CGRectMake(10, 16, 12, 20);
+    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [self.backBtn addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.backBtn];
     self.navigationItem.leftBarButtonItem = leftItem;
@@ -74,7 +82,7 @@
     self.titleView.backgroundColor = RGBA(235, 235, 235, 1);
     [self.view addSubview:self.titleView];
     self.tieziBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.tieziBtn.frame = CGRectMake(52, 9, 56, 12);
+    self.tieziBtn.frame = CGRectMake(52, 0, (ScreenWidth-208)/2, 21);
     [self.tieziBtn setTitle:@"帖子收藏" forState:UIControlStateNormal];
     [self.tieziBtn setTitleColor:RGBA(236, 119, 147, 1) forState:UIControlStateNormal];
     [self.tieziBtn.titleLabel setFont:[UIFont fontWithName:@"Microsoft Yahei UI" size:12]];
@@ -82,7 +90,7 @@
     [self.titleView addSubview:self.tieziBtn];
     
     self.zhishiBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    self.zhishiBtn.frame = CGRectMake(self.tieziBtn.frame.origin.x+self.tieziBtn.frame.size.width+104, 9, 56, 12);
+    self.zhishiBtn.frame = CGRectMake(self.tieziBtn.frame.origin.x+self.tieziBtn.frame.size.width+104, 0, (ScreenWidth-208)/2, 21);
     [self.zhishiBtn setTitle:@"知识收藏" forState:UIControlStateNormal];
     [self.zhishiBtn setTitleColor:RGBA(137, 137, 137, 1) forState:UIControlStateNormal];
     [self.zhishiBtn.titleLabel setFont:[UIFont fontWithName:@"Microsoft Yahei UI" size:12]];
@@ -96,11 +104,11 @@
     self.lineView = [[UIView alloc] initWithFrame:CGRectMake(0, titlelineView.frame.origin.y+titlelineView.frame.size.height, ScreenWidth, 3)];
     [self.titleView addSubview:self.lineView];
     
-    self.tiezilineView = [[UIView alloc] initWithFrame:CGRectMake(20, 0, 120, self.lineView.frame.size.height)];
+    self.tiezilineView = [[UIView alloc] initWithFrame:CGRectMake(20, 0, (ScreenWidth-80)/2, self.lineView.frame.size.height)];
     self.tiezilineView.backgroundColor = RGBA(236, 119, 147, 1);
     [self.lineView addSubview:self.tiezilineView];
     
-    self.zhishilineView = [[UIView alloc] initWithFrame:CGRectMake(ScreenWidth-140, 0, 120, self.lineView.frame.size.height)];
+    self.zhishilineView = [[UIView alloc] initWithFrame:CGRectMake(ScreenWidth-((ScreenWidth-80)/2)-20, 0, (ScreenWidth-80)/2, self.lineView.frame.size.height)];
     [self.lineView addSubview:self.zhishilineView];
 }
 
@@ -110,6 +118,7 @@
     self.scrollView.contentSize = CGSizeMake(ScreenWidth*2, 1);
     self.scrollView.userInteractionEnabled = YES;
     self.scrollView.pagingEnabled = YES;
+    self.scrollView.bounces = NO;
     self.scrollView.showsHorizontalScrollIndicator = NO;
     self.scrollView.showsVerticalScrollIndicator = NO;
     self.scrollView.delegate = self;
@@ -151,7 +160,7 @@
 
 -(void)clickzhishiBtn
 {
-    self.scrollView.contentOffset = CGPointMake(320, 1);
+    self.scrollView.contentOffset = CGPointMake(ScreenWidth, 1);
     [self.zhishiBtn setTitleColor:RGBA(236, 119, 147, 1) forState:UIControlStateNormal];
     [self.tieziBtn setTitleColor:RGBA(137, 137, 137, 1) forState:UIControlStateNormal];
     self.zhishilineView.backgroundColor = RGBA(236, 119, 147, 1);
@@ -173,7 +182,7 @@
 
 -(void)goBack:(UIButton*)sender
 {
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -192,7 +201,7 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *str = @"cell";
+    NSString *str = [NSString stringWithFormat:@"cell%d%d",indexPath.section,indexPath.row];
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:str];
     if (cell == nil) {
         cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:str];
@@ -262,11 +271,11 @@
         self.timeLab.textColor = RGBA(137, 137, 137, 1);
         [cell addSubview:self.timeLab];
         
-        self.zhuanfaImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.timeLab.frame.origin.x+self.timeLab.frame.size.width+75, titleLabel.frame.origin.y+titleLabel.frame.size.height+11, 11, 8)];
+        self.zhuanfaImg = [[UIImageView alloc]initWithFrame:CGRectMake(ScreenWidth-101, titleLabel.frame.origin.y+titleLabel.frame.size.height+11, 11, 8)];
         self.zhuanfaImg.image = [UIImage imageNamed:@"see"];
         [cell addSubview:self.zhuanfaImg];
         
-        self.zhuanfacountLabel = [[UILabel alloc]initWithFrame:CGRectMake(self.zhuanfaImg.frame.origin.x+self.zhuanfaImg.frame.size.width+5, titleLabel.frame.origin.y+titleLabel.frame.size.height+9, 30, 12)];
+        self.zhuanfacountLabel = [[UILabel alloc]initWithFrame:CGRectMake(ScreenWidth-85, titleLabel.frame.origin.y+titleLabel.frame.size.height+9, 30, 12)];
         self.zhuanfacountLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:8];
         //self.zhuanfacountLabel.text = @"2942";
         self.zhuanfacountLabel.text = [[self.tieziArr objectAtIndex:indexPath.row] objectForKey:@"chakanzongshu"];
@@ -274,11 +283,11 @@
         [cell addSubview:self.zhuanfacountLabel];
         
         //信息图片与条数
-        self.messageImg = [[UIImageView alloc]initWithFrame:CGRectMake(self.zhuanfacountLabel.frame.origin.x+self.zhuanfacountLabel.frame.size.width+5, titleLabel.frame.origin.y+titleLabel.frame.size.height+11, 10, 8)];
+        self.messageImg = [[UIImageView alloc]initWithFrame:CGRectMake(ScreenWidth-45, titleLabel.frame.origin.y+titleLabel.frame.size.height+11, 10, 8)];
         self.messageImg.image = [UIImage imageNamed:@"话题"];
         [cell addSubview:self.messageImg];
         
-        self.messageLab = [[UILabel alloc]initWithFrame:CGRectMake(self.messageImg.frame.origin.x+self.messageImg.frame.size.width+5, titleLabel.frame.origin.y+titleLabel.frame.size.height+9, 30, 12)];
+        self.messageLab = [[UILabel alloc]initWithFrame:CGRectMake(ScreenWidth-30, titleLabel.frame.origin.y+titleLabel.frame.size.height+9, 30, 12)];
         self.messageLab.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:8];
         //self.messageLab.text = @"12345";
         self.messageLab.text = [[[self.tieziArr objectAtIndex:indexPath.row] objectForKey:@"pinglunzongshu"] stringValue];
@@ -287,6 +296,18 @@
         
     }
     return cell;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (tableView == self.zhishiTableView) {
+        Play_VC *play = [[Play_VC alloc] init];
+        play.hidesBottomBarWhenPushed =YES;
+        play.listID = [[self.zhishiArr objectAtIndex:indexPath.row] objectForKey:@"wenzhangid"];
+        play.canshuStr = @"1";
+        [self.navigationController pushViewController:play animated:YES];
+    }
+    
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath

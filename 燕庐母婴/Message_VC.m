@@ -79,9 +79,7 @@
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"导航栏"] forBarMetrics:UIBarMetricsDefault];
     
     /*-------------状态栏改变背景颜色-----------*/
-    UIView *head = [[UIView alloc]initWithFrame:CGRectMake(0, 0,self.view.bounds.size.width, 20)];
-    head.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
-    [self.navigationController.view addSubview:head];
+    
     
     self.view.backgroundColor = RGBA(235, 235, 235, 1);
   //  self.view.backgroundColor=RGBA(235,235,235,1);
@@ -90,7 +88,7 @@
     //返回按钮
     backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     backBtn.frame = CGRectMake(20, 14, 16, 20);
-    [backBtn setBackgroundImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    [backBtn setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [backBtn addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
     self.navigationItem.leftBarButtonItem = leftItem;
@@ -237,7 +235,7 @@
 
 -(void)creatScrollView
 {
-   scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0,lineView.frame.origin.y+lineView.frame.size.height, ScreenWidth, ScreenHeight-lineView.frame.origin.y-lineView.frame.size.height-64-40)];
+   scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0,lineView.frame.origin.y+lineView.frame.size.height, ScreenWidth, ScreenHeight-lineView.frame.origin.y-lineView.frame.size.height-64)];
     scrollView.contentSize = CGSizeMake(ScreenWidth*4, 1);
     scrollView.userInteractionEnabled = YES;
     scrollView.pagingEnabled = YES;
@@ -249,7 +247,7 @@
 
 -(void)creatTabelView
 {
-    replyTable = [[UITableView alloc] initWithFrame:CGRectMake(0, 40, ScreenWidth,CGRectGetHeight(scrollView.frame)-49) style:UITableViewStylePlain];
+    replyTable = [[UITableView alloc] initWithFrame:CGRectMake(0, 40, ScreenWidth,CGRectGetHeight(scrollView.frame)-44) style:UITableViewStylePlain];
     replyTable.delegate = self;
     replyTable.dataSource  = self;
     [self setExtraCellLineHidden:replyTable];

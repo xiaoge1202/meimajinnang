@@ -7,7 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "PrefixHeader.pch"
+#import "EnterViewController.h"
 
-@interface GuideViewController : UIViewController
-
+@interface GuideViewController : UIViewController<UIScrollViewDelegate>
+@property(nonatomic,strong) UIScrollView* scrollView;
 @end

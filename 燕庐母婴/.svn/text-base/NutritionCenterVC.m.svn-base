@@ -1,0 +1,542 @@
+//
+//  NutritionCenterVC.m
+//  燕庐母婴
+//
+//  Created by 侯泽彭 on 15/7/14.
+//  Copyright (c) 2015年 燕庐科技. All rights reserved.
+//
+
+#import "NutritionCenterVC.h"
+
+@interface NutritionCenterVC ()
+{
+    CGSize sizes;
+    UILabel *jieshaolabel;
+    
+    UILabel *biaotilabel;
+    CGSize buzouSizes;
+}
+@end
+
+@implementation NutritionCenterVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    
+    [self addyingyangzhongxin];
+    
+    self.navigationItem.title = self.biaotiStr;
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"导航栏"] forBarMetrics:UIBarMetricsDefault];
+    UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    backBtn.frame = CGRectMake(10, 16, 12, 20);
+    [backBtn setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+    [backBtn addTarget:self action:@selector(backViewController) forControlEvents:UIControlEventTouchUpInside];
+    UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
+    self.navigationItem.leftBarButtonItem = leftItem;
+    
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight-44) style:UITableViewStyleGrouped];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    
+    UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenWidth*0.6)];
+    imgView.image = [UIImage imageNamed:@"未标题-5-02"];
+    self.tableView.tableHeaderView = imgView;
+    
+    UIImageView *textImg = [[UIImageView alloc] initWithFrame:CGRectMake(0, imgView.frame.size.height-35, ScreenWidth, 35)];
+    textImg.image = [UIImage imageNamed:@"未标题-5-04"];
+    [imgView addSubview:textImg];
+    
+    biaotilabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 0, ScreenWidth-20, 35)];
+    biaotilabel.textColor = RGBA(62, 58, 57, 1);
+    biaotilabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:18];
+    [textImg addSubview:biaotilabel];
+    
+    // Do any additional setup after loading the view.
+}
+
+-(void)addyingyangzhongxin
+{
+    self.manager = [AFHTTPRequestOperationManager manager];
+    self.manager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
+    [self.manager GET:@"http://101.200.234.127:8080/YanLu/yingyangzhongxin/findYingYangById.do" parameters:[@{@"id":self.idStr}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        NSData *data = (NSData *)responseObject;
+        self.yingyangArr =[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        jieshaolabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 10, ScreenWidth-30, 50)];
+        jieshaolabel.text = [[self.yingyangArr objectAtIndex:0] objectForKey:@"neirong"];
+        jieshaolabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+        jieshaolabel.textColor = RGBA(62, 58, 57, 1);
+        jieshaolabel.NumberOfLines = 0;
+        NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+        //textlabel.backgroundColor = [UIColor redColor];
+        paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+        NSDictionary *attributes = @{NSFontAttributeName:jieshaolabel.font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+        sizes = [jieshaolabel.text boundingRectWithSize:CGSizeMake(ScreenWidth-30, 999) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
+        [jieshaolabel setFrame:CGRectMake(15, 10, sizes.width, sizes.height)];
+        
+        biaotilabel.text = [[self.yingyangArr objectAtIndex:0] objectForKey:@"biaoti"];
+        
+        self.zhuliaoDic = [[self.yingyangArr objectAtIndex:0] objectForKey:@"zhuliao"];
+        self.fuliaoDic = [[self.yingyangArr objectAtIndex:0] objectForKey:@"fuliao"];
+        self.buzouDic = [[self.yingyangArr objectAtIndex:0] objectForKey:@"buzhou"];
+        self.buzoutupianDic = [[self.yingyangArr objectAtIndex:0] objectForKey:@"buzhoutupian"];
+        
+        NSLog(@"1111111%@",self.yingyangArr);
+        
+        
+        self.labelArr1 = [[NSMutableArray array] init];
+        self.labelArr2 = [[NSMutableArray array] init];
+        self.labelArr3 = [[NSMutableArray array] init];
+        self.labelArr4 = [[NSMutableArray array] init];
+        self.labelArr5 = [[NSMutableArray array] init];
+        self.labelArr6 = [[NSMutableArray array] init];
+        self.labelArr7 = [[NSMutableArray array] init];
+        self.labelArr8 = [[NSMutableArray array] init];
+        
+        self.zhuliaoStrArr = [[NSMutableArray alloc] init];
+        self.fuliaoStrArr = [[NSMutableArray alloc] init];
+        
+        for (int i = 0; i<self.zhuliaoDic.count; i++)
+        {
+            NSString *zhuliaoStr = [self.zhuliaoDic objectForKey:[NSString stringWithFormat:@"zhuliao%d",i]];
+            NSArray *array = [zhuliaoStr componentsSeparatedByString:@"="];
+            [self.zhuliaoStrArr addObject:array];
+        }
+        
+        for (int i = 0; i<self.fuliaoDic.count; i++)
+        {
+            NSString *fuliaoStr = [self.fuliaoDic objectForKey:[NSString stringWithFormat:@"fuliao%d",i]];
+            NSArray *array = [fuliaoStr componentsSeparatedByString:@"="];
+            [self.fuliaoStrArr addObject:array];
+        }
+        
+        if (self.zhuliaoDic.count/2>=1) {
+            if (self.zhuliaoDic.count%2==0) {
+                
+                for (int i = 0; i<self.zhuliaoDic.count/2; i++) {
+                    
+                    UILabel *label1 = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 40, 23)];
+                    label1.tag = i+66;
+                    label1.text = [[self.zhuliaoStrArr objectAtIndex:i*2] objectAtIndex:0];
+                    label1.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    //label1.textAlignment = NSTextAlignmentCenter;
+                    
+                    label1.textColor = RGBA(62, 58, 57, 1);
+                    
+                    UILabel *label2 = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth/2-40, 0, 40, 23)];
+                    label2.tag = i+666;
+                    label2.text = [[self.zhuliaoStrArr objectAtIndex:i*2] objectAtIndex:1];
+                    //label2.textAlignment = NSTextAlignmentCenter;
+                    label2.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    label2.textColor = RGBA(137, 137, 137, 1);
+                    
+                    
+                    
+                    UILabel *label3 = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth/2+10, 0, 40, 23)];
+                    label3.tag = i+6666;
+                    label3.text = [[self.zhuliaoStrArr objectAtIndex:i*2+1] objectAtIndex:0];
+                    //label3.textAlignment = NSTextAlignmentCenter;
+                    label3.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    label3.textColor = RGBA(62, 58, 57, 1);
+                    
+                    UILabel *label4 = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth-40, 0, 40, 23)];
+                    label4.tag = i+66666;
+                    label4.text = [[self.zhuliaoStrArr objectAtIndex:i*2+1] objectAtIndex:1];
+                    //label4.textAlignment = NSTextAlignmentCenter;
+                    label4.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    label4.textColor = RGBA(137, 137, 137, 1);
+                    
+                    [self.labelArr1 addObject:label1];
+                    [self.labelArr2 addObject:label2];
+                    [self.labelArr3 addObject:label3];
+                    [self.labelArr4 addObject:label4];
+                }
+            }
+            else
+            {
+                for (int i = 0; i<(self.zhuliaoDic.count/2+1); i++) {
+                    UILabel *label1 = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 40, 23)];
+                    label1.tag = i+66;
+                    label1.text = [[self.zhuliaoStrArr objectAtIndex:i*2] objectAtIndex:0];
+                    label1.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    //label1.textAlignment = NSTextAlignmentCenter;
+                    label1.textColor = RGBA(62, 58, 57, 1);
+                    
+                    UILabel *label2 = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth/2-40, 0, 40, 23)];
+                    label2.tag = i+666;
+                    label2.text = [[self.zhuliaoStrArr objectAtIndex:i*2] objectAtIndex:1];
+                    //label2.textAlignment = NSTextAlignmentCenter;
+                    label2.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    label2.textColor = RGBA(137, 137, 137, 1);
+                    
+                    
+                    [self.labelArr1 addObject:label1];
+                    [self.labelArr2 addObject:label2];
+                }
+                
+                for (int i = 0; i<self.zhuliaoDic.count/2; i++) {
+                    
+                    UILabel *label3 = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth/2+10, 0, 40, 23)];
+                    label3.tag = i+6666;
+                    label3.text = [[self.zhuliaoStrArr objectAtIndex:i*2+1] objectAtIndex:0];
+                    //label3.textAlignment = NSTextAlignmentCenter;
+                    label3.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    label3.textColor = RGBA(62, 58, 57, 1);
+                    
+                    UILabel *label4 = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth-40, 0, 40, 23)];
+                    label4.tag = i+66666;
+                    label4.text = [[self.zhuliaoStrArr objectAtIndex:i*2+1] objectAtIndex:1];
+                    //label4.textAlignment = NSTextAlignmentCenter;
+                    label4.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    label4.textColor = RGBA(137, 137, 137, 1);
+                    
+                    [self.labelArr3 addObject:label3];
+                    [self.labelArr4 addObject:label4];
+                }
+            }
+        }
+        
+        if (self.fuliaoDic.count/2>=1) {
+            if (self.fuliaoDic.count%2==0) {
+                for (int i = 0; i<self.fuliaoDic.count/2; i++) {
+                    UILabel *label1 = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 60, 23)];
+                    label1.tag = i+1;
+                    label1.text = [[self.fuliaoStrArr objectAtIndex:i*2] objectAtIndex:0];
+                    label1.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    //label1.textAlignment = NSTextAlignmentCenter;
+                    label1.textColor = RGBA(62, 58, 57, 1);
+                    
+                    UILabel *label2 = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth/2-40, 0, 40, 23)];
+                    label2.tag = i+10;
+                    label2.text = [[self.fuliaoStrArr objectAtIndex:i*2] objectAtIndex:1];
+                    //label2.textAlignment = NSTextAlignmentCenter;
+                    label2.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    label2.textColor = RGBA(137, 137, 137, 1);
+                    
+                    
+                    
+                    UILabel *label3 = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth/2+10, 0, 60, 23)];
+                    label3.tag = i+100;
+                    label3.text = [[self.fuliaoStrArr objectAtIndex:i*2+1] objectAtIndex:0];
+                    //label3.textAlignment = NSTextAlignmentCenter;
+                    label3.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    label3.textColor = RGBA(62, 58, 57, 1);
+                    
+                    UILabel *label4 = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth-40, 0, 40, 23)];
+                    label4.tag = i+1000;
+                    label4.text = [[self.fuliaoStrArr objectAtIndex:i*2+1] objectAtIndex:1];
+                    //label4.textAlignment = NSTextAlignmentCenter;
+                    label4.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    label4.textColor = RGBA(137, 137, 137, 1);
+                    
+                    [self.labelArr5 addObject:label1];
+                    [self.labelArr6 addObject:label2];
+                    [self.labelArr7 addObject:label3];
+                    [self.labelArr8 addObject:label4];
+                }
+            }
+            else
+            {
+                for (int i = 0; i<(self.fuliaoDic.count/2+1); i++) {
+                    UILabel *label1 = [[UILabel alloc] initWithFrame:CGRectMake(15, 0, 60, 23)];
+                    label1.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    //label1.textAlignment = NSTextAlignmentCenter;
+                    label1.text = [[self.fuliaoStrArr objectAtIndex:i*2] objectAtIndex:0];
+                    label1.tag = i+1;
+                    label1.textColor = RGBA(62, 58, 57, 1);
+                    
+                    UILabel *label2 = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth/2-40, 0, 40, 23)];
+                    label2.text = [[self.fuliaoStrArr objectAtIndex:i*2] objectAtIndex:1];
+                    label2.tag = i+10;
+                    //label2.textAlignment = NSTextAlignmentCenter;
+                    label2.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    label2.textColor = RGBA(137, 137, 137, 1);
+                    
+                    
+                    [self.labelArr5 addObject:label1];
+                    [self.labelArr6 addObject:label2];
+                }
+                
+                for (int i = 0; i<self.fuliaoDic.count/2; i++) {
+                    
+                    UILabel *label3 = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth/2+10, 0, 60, 23)];
+                    //label3.textAlignment = NSTextAlignmentCenter;
+                    label3.text = [[self.fuliaoStrArr objectAtIndex:i*2+1] objectAtIndex:0];
+                    label3.tag = i+100;
+                    label3.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    label3.textColor = RGBA(62, 58, 57, 1);
+                    
+                    UILabel *label4 = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth-40, 0, 40, 23)];
+                    label4.text = [[self.fuliaoStrArr objectAtIndex:i*2+1] objectAtIndex:1];
+                    label4.tag = i+1000;
+                    //label4.textAlignment = NSTextAlignmentCenter;
+                    label4.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+                    label4.textColor = RGBA(137, 137, 137, 1);
+                    
+                    [self.labelArr7 addObject:label3];
+                    [self.labelArr8 addObject:label4];
+                }
+            }
+        }
+        [self.tableView reloadData];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"获取相响应失败");
+    }];
+}
+
+-(void)backViewController
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 4;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    switch (section) {
+        case 0:
+            return 1;
+            break;
+            
+        case 1:
+            if (self.zhuliaoDic.count/2>=1) {
+                if (self.zhuliaoDic.count%2==0) {
+                    return self.zhuliaoDic.count/2;
+                }
+                else
+                {
+                    return self.zhuliaoDic.count/2+1;
+                }
+            }
+            else
+            {
+                return 1;
+            }
+            break;
+            
+        case 2:
+            if (self.fuliaoDic.count/2>=1) {
+                if (self.fuliaoDic.count%2==0) {
+                    return self.fuliaoDic.count/2;
+                }
+                else
+                {
+                    return self.fuliaoDic.count/2+1;
+                }
+            }
+            else
+            {
+                return 1;
+            }
+            break;
+            
+        default:
+            return self.buzouDic.count;
+            break;
+    }
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *str = [NSString stringWithFormat:@"cell%d%d",indexPath.section,indexPath.row];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:str];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:str];
+    }
+    
+    
+    UIView *line1 = [[UIView alloc] initWithFrame:CGRectMake(ScreenWidth/2, 3, 1, 17)];
+    line1.backgroundColor = RGBA(137, 137, 137, 1);
+    
+
+
+    
+    UILabel *buzulabel = [[UILabel alloc] initWithFrame:CGRectMake(15, 35, ScreenWidth-147, 40)];
+    //buzulabel.numberOfLines = 2;
+    buzulabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
+    buzulabel.textColor = RGBA(62, 58, 57, 1);
+    
+    UIImageView *imgView = [[UIImageView alloc] initWithFrame:CGRectMake(ScreenWidth-132, 10, 112, 84)];
+    
+    
+    NSString *fuliaoStr1 = [self.fuliaoDic objectForKey:@"fuliao0"];
+    NSArray *array11 = [fuliaoStr1 componentsSeparatedByString:@"="];
+    
+    NSString *fuliaoStr2 = [self.fuliaoDic objectForKey:@"fuliao1"];
+    NSArray *array22 = [fuliaoStr2 componentsSeparatedByString:@"="];
+    
+//    NSString *fuliaoStr3 = [self.fuliaoDic objectForKey:@"fuliao2"];
+//    NSArray *array33 = [fuliaoStr3 componentsSeparatedByString:@"="];
+    
+    switch (indexPath.section) {
+        case 0:
+            [cell addSubview:jieshaolabel];
+            break;
+            
+        case 1:
+            
+            [cell addSubview:line1];
+            if (self.zhuliaoDic.count/2>=1) {
+                if (self.zhuliaoDic.count%2==0) {
+                    [cell addSubview:[self.labelArr1 objectAtIndex:indexPath.row]];
+                    [cell addSubview:[self.labelArr2 objectAtIndex:indexPath.row]];
+                    [cell addSubview:[self.labelArr3 objectAtIndex:indexPath.row]];
+                    [cell addSubview:[self.labelArr4 objectAtIndex:indexPath.row]];
+                    
+                }
+                else
+                {
+                    
+                    [cell addSubview:[self.labelArr1 objectAtIndex:indexPath.row]];
+                    [cell addSubview:[self.labelArr2 objectAtIndex:indexPath.row]];
+                    
+                    if (indexPath.row<self.zhuliaoDic.count/2) {
+                        [cell addSubview:[self.labelArr3 objectAtIndex:indexPath.row]];
+                        [cell addSubview:[self.labelArr4 objectAtIndex:indexPath.row]];
+                    }
+                    
+                    
+                    
+                }
+            }
+            break;
+            
+            
+        case 2:
+            
+            [cell addSubview:line1];
+                if (self.fuliaoDic.count/2>=1) {
+                    if (self.fuliaoDic.count%2==0) {
+                        [cell addSubview:[self.labelArr5 objectAtIndex:indexPath.row]];
+                        [cell addSubview:[self.labelArr6 objectAtIndex:indexPath.row]];
+                        [cell addSubview:[self.labelArr7 objectAtIndex:indexPath.row]];
+                        [cell addSubview:[self.labelArr8 objectAtIndex:indexPath.row]];
+                        
+                    }
+                    else
+                    {
+                        
+                        [cell addSubview:[self.labelArr5 objectAtIndex:indexPath.row]];
+                        [cell addSubview:[self.labelArr6 objectAtIndex:indexPath.row]];
+                        
+                        if (indexPath.row<self.fuliaoDic.count/2) {
+                            [cell addSubview:[self.labelArr7 objectAtIndex:indexPath.row]];
+                            [cell addSubview:[self.labelArr8 objectAtIndex:indexPath.row]];
+                        }
+                            
+                        
+                        
+                    }
+                }
+            break;
+            
+            
+        default:
+            [cell addSubview:buzulabel];
+            [cell addSubview:imgView];
+            buzulabel.text = [self.buzouDic objectForKey:[NSString stringWithFormat:@"buzhou%d",indexPath.row]];
+            
+            buzulabel.NumberOfLines = 0;
+            NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+            //textlabel.backgroundColor = [UIColor redColor];
+            paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+            NSDictionary *attributes = @{NSFontAttributeName:buzulabel.font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+            buzouSizes = [buzulabel.text boundingRectWithSize:CGSizeMake(ScreenWidth-147, 999) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
+            [buzulabel setFrame:CGRectMake(15, (102-buzouSizes.height)/2, buzouSizes.width, buzouSizes.height)];
+            
+            NSDictionary *group=[[NSDictionary alloc]initWithObjectsAndKeys:indexPath,@"indexpath",cell,@"cell", nil];
+            [NSThread detachNewThreadSelector:@selector(loadLabelTableView:) toTarget:self withObject:group];
+            //NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:[self.buzouDic objectForKey:[NSString stringWithFormat:@"buzhoutupian%d",indexPath.row]]]];
+            //imgView.image = [UIImage imageWithData:data];
+            break;
+    }
+    
+    return cell;
+    
+}
+
+-(void)loadLabelTableView:(NSDictionary *)group
+{
+    UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(ScreenWidth-132, 10, 112, 84)];
+    NSData *data=[NSData dataWithContentsOfURL:[NSURL URLWithString:[self.buzoutupianDic objectForKey:[NSString stringWithFormat:@"buzhoutupian%d",[[group objectForKey:@"indexpath"] row]]]]];
+    //NSLog(@"tupian:%@",data);
+    UIImage *img=[UIImage imageWithData:data];
+    
+    imageView.image=img;
+    
+    [[group objectForKey:@"cell"]  addSubview:imageView];
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    switch (indexPath.section) {
+        case 0:
+            return sizes.height+20;
+            break;
+            
+        case 1:
+            return 23;
+            break;
+            
+        case 2:
+            return 23;
+            break;
+            
+        default:
+            return 102;
+            break;
+    }
+}
+
+-(UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    if (section > 0) {
+        UIView *titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 41)];
+        //titleView.backgroundColor = [UIColor grayColor];
+        UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(15, -10, ScreenWidth-30, 16)];
+        if (section == 1) {
+            label.text = @"主料";
+        }
+        else if (section == 2)
+        {
+            label.text = @"辅料";
+        }
+        else
+        {
+            label.text = @"制作步骤";
+        }
+        label.textColor = RGBA(137, 137, 137, 1);
+        label.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:16];
+        [titleView addSubview:label];
+        return titleView;
+    }
+    else
+    {
+        return nil;
+    }
+}
+
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    
+    
+    
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

@@ -1,0 +1,113 @@
+K 25
+svn:wc:ra_dav:version-url
+V 162
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers
+END
+SSGooglePlusUrlReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusUrlReader.h
+END
+SSGooglePlusOrganizationReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 195
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusOrganizationReader.h
+END
+GooglePlusConnection.h
+K 25
+svn:wc:ra_dav:version-url
+V 185
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/GooglePlusConnection.h
+END
+ISSGooglePlusApp.h
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/ISSGooglePlusApp.h
+END
+SSGooglePlusShareContentEntity.h
+K 25
+svn:wc:ra_dav:version-url
+V 195
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusShareContentEntity.h
+END
+SSGooglePlusPlaceLivedReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 193
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusPlaceLivedReader.h
+END
+SSGooglePlusAgeRangeReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 191
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusAgeRangeReader.h
+END
+SSGooglePlusUserReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 187
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusUserReader.h
+END
+SSGooglePlusCoverReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusCoverReader.h
+END
+SSGooglePlusNameReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 187
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusNameReader.h
+END
+SSGooglePlusErrorInfo.h
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusErrorInfo.h
+END
+SSGooglePlusImageReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusImageReader.h
+END
+SSGooglePlusCredential.h
+K 25
+svn:wc:ra_dav:version-url
+V 187
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusCredential.h
+END
+SSGooglePlusEmailReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 188
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusEmailReader.h
+END
+SSGooglePlusCoverPhotoReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 193
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusCoverPhotoReader.h
+END
+SSGooglePlusCoverInfoReader.h
+K 25
+svn:wc:ra_dav:version-url
+V 192
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusCoverInfoReader.h
+END
+SSGooglePlusShareInfo.h
+K 25
+svn:wc:ra_dav:version-url
+V 186
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusShareInfo.h
+END
+SSGooglePlusUser.h
+K 25
+svn:wc:ra_dav:version-url
+V 181
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/GooglePlusConnection.framework/Headers/SSGooglePlusUser.h
+END

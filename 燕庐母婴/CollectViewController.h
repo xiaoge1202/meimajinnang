@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "PrefixHeader.pch"
 #import "AFHTTPRequestOperationManager.h"
+#import "Play-VC.h"
 @interface CollectViewController : UIViewController<UIScrollViewDelegate,UITableViewDataSource,UITableViewDelegate>
 @property (strong,nonatomic) AFHTTPRequestOperationManager *manager;
 @property (strong,nonatomic) UIScrollView *scrollView;

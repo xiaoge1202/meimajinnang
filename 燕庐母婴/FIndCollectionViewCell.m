@@ -14,10 +14,11 @@
 {
     self = [super initWithFrame:frame];
     if (self) {
-        _imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 60, 60)];
+        _imgView = [[UIImageView alloc] initWithFrame:CGRectMake(15, 0, 60, 60)];
         [self addSubview:_imgView];
         
-        _label = [[UILabel alloc] initWithFrame:CGRectMake(0, 65, 60, 20)];
+        
+        _label = [[UILabel alloc] initWithFrame:CGRectMake(0, 65, 90, 20)];
         _label.textAlignment = NSTextAlignmentCenter;
         _label.font = [UIFont fontWithName:nil size:12];
         [self addSubview:_label];

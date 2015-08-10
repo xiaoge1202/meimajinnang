@@ -17,21 +17,114 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.navigationItem.title = @"设 置";
-    self.view.backgroundColor = [UIColor whiteColor];
+    
+    
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"导航栏"] forBarMetrics:UIBarMetricsDefault];
+    
+    /*-------------状态栏改变背景颜色-----------*/
+//    UIView *head = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 20)];
+//    head.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
+//    [self.navigationController.view addSubview:head];
+    
+    self.view.backgroundColor = RGBA(235, 235, 235, 1);
+
+    
+    
     //返回按钮
     self.backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.backBtn.frame = CGRectMake(20, 14, 16, 20);
-    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    self.backBtn.frame = CGRectMake(10, 16, 12, 20);
+    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [self.backBtn addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.backBtn];
     self.navigationItem.leftBarButtonItem = leftItem;
-    // Do any additional setup after loading the view.
+    
+    
+    [self creatTableView];
+    
+    
+}
+
+
+
+-(void)creatTableView
+{
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight-64) style:UITableViewStyleGrouped];
+    self.tableView.delegate = self;
+    self.tableView.dataSource = self;
+    [self.view addSubview:self.tableView];
+    
+    UIView *footerview = [[UIView alloc] initWithFrame:CGRectMake(0, 10, ScreenWidth, 40)];
+    
+    footerview.backgroundColor = [UIColor clearColor];
+    self.tableView.tableFooterView = footerview;
+    
+    UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+    [backBtn setFrame:CGRectMake(30, 20, ScreenWidth-60, 40)];
+    backBtn.backgroundColor = [UIColor grayColor];
+    backBtn.layer.cornerRadius = 10;
+    [backBtn setTitle:@"退出登录" forState:UIControlStateNormal];
+    [backBtn setTitleColor:[UIColor redColor] forState:UIControlStateNormal];
+    [backBtn.titleLabel setFont:[UIFont fontWithName:@"Microsoft Yahei UI" size:16]];
+    [backBtn addTarget:self action:@selector(clickBackBtn) forControlEvents:UIControlEventTouchUpInside];
+    [footerview addSubview:backBtn];
+}
+
+-(void)clickBackBtn
+{
+    UIAlertView * alert = [[UIAlertView alloc]initWithTitle:nil message:@"是否退出？" delegate:self cancelButtonTitle:@"否" otherButtonTitles:@"是", nil];
+    [alert show];
+}
+
+//点击弹出框触发该方法
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == 1)
+    {
+        
+        NSUserDefaults *user =[NSUserDefaults standardUserDefaults];
+        NSString *username = [user objectForKey:@"username"];
+        [user removeObjectForKey:@"username"];
+        [user removeObjectForKey:@"password"];
+        [user removeObjectForKey:@"userid"];
+        
+        [user setObject:nil forKey:@"firstLogin"];
+        [user synchronize];
+        
+        EnterViewController *enterVC = [[EnterViewController alloc] init];
+        enterVC.hidesBottomBarWhenPushed = YES;
+        enterVC.username = username;
+        enterVC.navigationItem.hidesBackButton = YES;
+        [self.navigationController pushViewController:enterVC animated:YES];
+        //exit(1);
+    }
+}
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 0;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 1;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *str = [NSString stringWithFormat:@"cell%d%d",indexPath.section,indexPath.row];
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:str];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:str];
+    }
+    
+    
+    
+    return cell;
 }
 
 -(void)goBack:(UIButton*)sender
 {
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)didReceiveMemoryWarning {

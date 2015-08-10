@@ -12,6 +12,7 @@
 {
     CGSize pinglunsize;
     UIImage *touxiangImg;
+    CGSize size;
 }
 @end
 
@@ -22,6 +23,7 @@
     [[TouxiangData sharedImage] openPphoto];
     self.imgArr = [[TouxiangData sharedImage] findAll];
     [[TouxiangData sharedImage] closePphoto];
+    [self.myhuitieTableView reloadData];
 }
 
 -(void)getMyhuitieMessage
@@ -36,7 +38,7 @@
         NSData *data = (NSData *)responseObject;
         self.dataArr =[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         NSLog(@"babyGrowArr:%@",self.dataArr);
-        [self getTouxiangImg];
+        //[self getTouxiangImg];
         [self.myhuitieTableView reloadData];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"获取相响应失败");
@@ -50,22 +52,28 @@
     
     self.navigationItem.title = @"我 的 回 帖";
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"导航栏"] forBarMetrics:UIBarMetricsDefault];
+    
+    /*-------------状态栏改变背景颜色-----------*/
+//    UIView *head = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 20)];
+//    head.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
+//    [self.navigationController.view addSubview:head];
+    
     self.view.backgroundColor = RGBA(235, 235, 235, 1);
     
     //返回按钮
     self.backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.backBtn.frame = CGRectMake(20, 14, 16, 20);
-    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    self.backBtn.frame = CGRectMake(10, 16, 12, 20);
+    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [self.backBtn addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.backBtn];
     self.navigationItem.leftBarButtonItem = leftItem;
     
-    UIButton *setupBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    setupBtn.frame = CGRectMake(ScreenWidth-52, 16, 38, 21);
-    [setupBtn setImage:[UIImage imageNamed:@"清空"] forState:UIControlStateNormal];
-    [setupBtn addTarget:self action:@selector(clickFinishBtn) forControlEvents:UIControlEventTouchUpInside];
-    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:setupBtn];
-    self.navigationItem.rightBarButtonItem = rightItem;
+//    UIButton *setupBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+//    setupBtn.frame = CGRectMake(ScreenWidth-52, 16, 38, 21);
+//    [setupBtn setImage:[UIImage imageNamed:@"清空"] forState:UIControlStateNormal];
+//    [setupBtn addTarget:self action:@selector(clickFinishBtn) forControlEvents:UIControlEventTouchUpInside];
+//    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:setupBtn];
+//    self.navigationItem.rightBarButtonItem = rightItem;
     
     [self creatTableView];
     // Do any additional setup after loading the view.
@@ -98,28 +106,28 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *str = @"cell";
+    NSString *str = [NSString stringWithFormat:@"cell%d%d",indexPath.section,indexPath.row];
     MyreturnTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:str];
     if (cell == nil) {
         cell = [[MyreturnTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:str];
     }
     
     NSDictionary *dic = [self.dataArr objectAtIndex:indexPath.row];
-    if ([[dic objectForKey:@"touxiang"] isEqualToString:@"1"]) {
+    if ([[dic objectForKey:@"touxiang"] isKindOfClass:[NSNull class]]) {
         cell.touxiangImg.image = [UIImage imageNamed:@"touxiangimg"];
     }
     else
     {
         //NSDictionary *group=[[NSDictionary alloc]initWithObjectsAndKeys:indexPath,@"indexpath",cell,@"cell", nil];
         //[NSThread detachNewThreadSelector:@selector(loadLabelTableView:) toTarget:self withObject:group];
-        NSURL *url = [NSURL URLWithString:[[self.imgArr objectAtIndex:0] objectForKey:@"Image"]];
+        NSURL *url = [NSURL URLWithString:[[self.imgArr objectAtIndex:self.imgArr.count-1] objectForKey:@"Image"]];
         
         
         ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:url];
         //获取全局变量
         AppDelegate *appDelegate = [[UIApplication sharedApplication] delegate];
         //设置缓存方式
-        [request setDownloadCache:appDelegate.myCache];
+        [request setDownloadCache:appDelegate.myCache1];
         //设置缓存数据存储策略，这里采取的是如果无更新或无法联网就读取缓存数据
         [request setCacheStoragePolicy:ASICachePermanentlyCacheStoragePolicy];
         request.delegate = self;
@@ -144,30 +152,27 @@
     }
     
     cell.nameLabel.text = [dic objectForKey:@"nicheng"];
+    //NSMutableString *timeString = [NSMutableString stringWithFormat:@"%@",[dic objectForKey:@"time"]];
+    //[timeString insertString:@"-" atIndex:4];
+    //[timeString insertString:@"-" atIndex:7];
+    cell.timeLabel.text = [dic objectForKey:@"time"];
     cell.neirongLabel.text = [dic objectForKey:@"neirong"];
-    [self.manager GET:tieziURL parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        
-        NSData *data =(NSData *)responseObject;
-        NSArray *array = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        //NSLog(@"圈子详细信息 = %@",array);
-        for (int i = 0; i<array.count; i++) {
-            if ([[dic objectForKey:@"tid"] integerValue] == [[[array objectAtIndex:i] objectForKey:@"id"] integerValue]) {
-                cell.pinglunLabel.text = [[array objectAtIndex:i] objectForKey:@"neirong"];
-//                cell.pinglunLabel.NumberOfLines = 0;
-//                NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
-//                paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
-//                NSDictionary *attributes = @{NSFontAttributeName:cell.pinglunLabel.font, NSParagraphStyleAttributeName:paragraphStyle.copy};
-//                pinglunsize = [cell.pinglunLabel.text boundingRectWithSize:CGSizeMake(ScreenWidth-20, 999) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
-//                [cell.pinglunLabel setFrame:CGRectMake(5, 8, pinglunsize.width, pinglunsize.height)];
-                //cell.huifukuangImg.frame = CGRectMake(0, 0, 260, pinglunsize.height);
-                break;
-            }
-        }
-        
-        
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"失败");
-    }];
+    cell.neirongLabel.NumberOfLines = 0;
+    NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc]init];
+    paragraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
+    NSDictionary *attributes = @{NSFontAttributeName:cell.neirongLabel.font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+    size = [cell.neirongLabel.text boundingRectWithSize:CGSizeMake(ScreenWidth-46, 999) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes context:nil].size;
+    [cell.neirongLabel setFrame:CGRectMake(36, cell.nameLabel.frame.origin.y+cell.nameLabel.frame.size.height+5, size.width, size.height)];
+    
+    
+    cell.pinglunLabel.text = [dic objectForKey:@"tneirong"];
+    cell.pinglunLabel.NumberOfLines = 0;
+    NSMutableParagraphStyle *paragraphStyle1 = [[NSMutableParagraphStyle alloc]init];
+    paragraphStyle1.lineBreakMode = NSLineBreakByWordWrapping;
+    NSDictionary *attributes1 = @{NSFontAttributeName:cell.pinglunLabel.font, NSParagraphStyleAttributeName:paragraphStyle.copy};
+    pinglunsize = [cell.pinglunLabel.text boundingRectWithSize:CGSizeMake(ScreenWidth-65, 999) options:NSStringDrawingUsesLineFragmentOrigin attributes:attributes1 context:nil].size;
+    [cell.pinglunLabel setFrame:CGRectMake(5, 8, pinglunsize.width, pinglunsize.height)];
+    [cell.huifukuangImg setFrame:CGRectMake(34, cell.neirongLabel.frame.origin.y+cell.neirongLabel.frame.size.height+3, ScreenWidth-60, 10+pinglunsize.height)];
     
     return cell;
 }
@@ -184,12 +189,47 @@
 
 -(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 65;
+    return 43+size.height+pinglunsize.height;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSDictionary *dict = [self.dataArr objectAtIndex:indexPath.row];
+    
+    NSString *tieziID =[dict objectForKey:@"tid"];
+    NSString *neirong =[dict objectForKey:@"tneirong"];
+    NSString *title = [dict objectForKey:@"title"];
+    NSString *quanziID=[dict objectForKey:@"qid"];
+    NSString *userid=[dict objectForKey:@"userid"];
+    NSString *dianzanzongshu=[[dict objectForKey:@"dianzanzongshu"]stringValue];
+    NSString *time=[dict objectForKey:@"time"];
+    
+    NSString *dianzan=[[dict objectForKey:@"dianzan"]stringValue];
+    NSString *zhuangtia=[[dict objectForKey:@"zhuangtai"]stringValue];
+    
+    NSString *pinglunNUmber=[dict objectForKey:@"pinglunzongshu"];
+    
+    PostsDetails_VC *Posts = [[PostsDetails_VC alloc] init];
+    Posts.TidCount = tieziID;
+    Posts.userId=userid;
+    NSLog(@"用户id%@",userid);
+    Posts.quanziID=quanziID;
+    NSLog(@"帖子ID = %@",tieziID);
+    Posts.title = title;
+    Posts.neirong = neirong;
+    Posts.zannumber=dianzanzongshu;
+    Posts.quanName=[dict objectForKeyedSubscript:@"quanname"];
+    Posts.time=time;
+    Posts.dianzan=dianzan;
+    Posts.pinglunnuber=pinglunNUmber;
+    Posts.zhuangtai=zhuangtia;
+    Posts.hidesBottomBarWhenPushed =YES;
+    [self.navigationController pushViewController:Posts animated:YES];
 }
 
 -(void)goBack:(UIButton*)sender
 {
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 -(void)clickFinishBtn

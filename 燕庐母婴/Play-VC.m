@@ -245,19 +245,12 @@
             if ([str isEqualToString:@"true"]) {
             
                 [secondCell.zanBtn setImage:[UIImage imageNamed:@"list已赞"] forState:UIControlStateNormal];
-                [secondCell.zanBtn setTitle:@"已赞"  forState:UIControlStateNormal];
+                [secondCell.zanBtn setTitle:zanNum  forState:UIControlStateNormal];
 
             }else{
                 
-                if ([zanNum isEqual:@"0"]) {
-                    
-                    [secondCell.zanBtn setTitle:@"点赞"  forState:UIControlStateNormal];
+                [secondCell.zanBtn setTitle:zanNum  forState:UIControlStateNormal];
 
-                } else {
-                    
-                    [secondCell.zanBtn setTitle:zanNum  forState:UIControlStateNormal];
-
-                }
                 [secondCell.zanBtn setImage:[UIImage imageNamed:@"list未赞"] forState:UIControlStateNormal];
 
             }
@@ -423,17 +416,12 @@
         if ([str isEqualToString:@"true"]) {
             
             [secondCell.zanBtn setImage:[UIImage imageNamed:@"list未赞"] forState:UIControlStateNormal];
-
-            if ([zanNum isEqual:@"0"]) {
-                
-                [secondCell.zanBtn setTitle:@"点赞" forState:UIControlStateNormal];
-            } else {
-                
-                [secondCell.zanBtn setTitle:zanNum forState:UIControlStateNormal];
-            }
+            [secondCell.zanBtn setTitle:zanNum forState:UIControlStateNormal];
+            
             
             [self.manager POST:@"http://101.200.234.127:8080/YanLu/dianzan/delete.do" parameters:[@{@"wenzhangid":self.listID,@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
-                
+               
+                [self getDataArr];
                 NSLog(@"取消点赞");
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 
@@ -443,10 +431,11 @@
         }else{
             
              [secondCell.zanBtn setImage:[UIImage imageNamed:@"list已赞"] forState:UIControlStateNormal];
-            [secondCell.zanBtn setTitle:@"已赞" forState:UIControlStateNormal];
-            
+            [secondCell.zanBtn setTitle:zanNum forState:UIControlStateNormal];
+
             [self.manager POST:@"http://101.200.234.127:8080/YanLu/dianzan/dianzan.do" parameters:[@{@"wenzhangid":self.listID,@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
                 
+                [self getDataArr];
                 NSLog(@"点赞成功");
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 

@@ -44,6 +44,8 @@
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"失败");
     }];
+    
+    
 }
 
 

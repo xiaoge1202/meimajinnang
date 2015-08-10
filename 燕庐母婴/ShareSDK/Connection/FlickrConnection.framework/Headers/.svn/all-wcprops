@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/FlickrConnection.framework/Headers
+END
+FlickrConnection.h
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/FlickrConnection.framework/Headers/FlickrConnection.h
+END
+ISSFlickrApp.h
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/FlickrConnection.framework/Headers/ISSFlickrApp.h
+END
+SSFlickrPhoto.h
+K 25
+svn:wc:ra_dav:version-url
+V 174
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/FlickrConnection.framework/Headers/SSFlickrPhoto.h
+END
+SSFlickrCredential.h
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/FlickrConnection.framework/Headers/SSFlickrCredential.h
+END
+SSFlickrUser.h
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/FlickrConnection.framework/Headers/SSFlickrUser.h
+END
+SSFlickrErrorInfo.h
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/FlickrConnection.framework/Headers/SSFlickrErrorInfo.h
+END

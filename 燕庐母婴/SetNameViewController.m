@@ -18,20 +18,29 @@
     [super viewDidLoad];
     
     self.navigationItem.title = @"更 改 昵 称";
+    
+    
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"导航栏"] forBarMetrics:UIBarMetricsDefault];
-    self.view.backgroundColor = [UIColor whiteColor];
+    
+    /*-------------状态栏改变背景颜色-----------*/
+//    UIView *head = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 20)];
+//    head.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
+//    [self.navigationController.view addSubview:head];
+    
+    self.view.backgroundColor = RGBA(235, 235, 235, 1);
+
     
     //返回按钮
     self.backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.backBtn.frame = CGRectMake(20, 14, 16, 20);
-    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    self.backBtn.frame = CGRectMake(10, 16, 12, 20);
+    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [self.backBtn addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.backBtn];
     self.navigationItem.leftBarButtonItem = leftItem;
     
     UIButton *setupBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    setupBtn.frame = CGRectMake(ScreenWidth-32, 16, 18, 18);
-    [setupBtn setImage:[UIImage imageNamed:@"设置"] forState:UIControlStateNormal];
+    setupBtn.frame = CGRectMake(ScreenWidth-32, 16, 43, 24);
+    [setupBtn setImage:[UIImage imageNamed:@"完成"] forState:UIControlStateNormal];
     [setupBtn addTarget:self action:@selector(clickFinishBtn) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithCustomView:setupBtn];
     self.navigationItem.rightBarButtonItem = rightItem;

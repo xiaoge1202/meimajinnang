@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "UMSocial.h"
+#import "PrefixHeader.pch"
+#import "MBProgressHUD.h"
+#import "AFHTTPRequestOperationManager.h"
 
-@interface Neirong_VC : UIViewController
-
+@interface Neirong_VC : UIViewController<UITableViewDataSource,UITableViewDelegate>
+@property (nonatomic,strong) UITableView *tableView;
+@property (strong,nonatomic) AFHTTPRequestOperationManager *manager;
 @end

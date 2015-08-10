@@ -34,4 +34,5 @@
 
 @property (strong,nonatomic) NSString *string;
 @property (strong,nonatomic) NSDictionary *dataDic;
+@property (nonatomic, strong) UISwipeGestureRecognizer *rightSwipeGestureRecognizer;
 @end

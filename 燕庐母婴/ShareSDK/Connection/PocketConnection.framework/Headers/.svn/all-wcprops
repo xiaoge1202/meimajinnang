@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 158
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/PocketConnection.framework/Headers
+END
+SSPocketItem.h
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/PocketConnection.framework/Headers/SSPocketItem.h
+END
+SSPocketUser.h
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/PocketConnection.framework/Headers/SSPocketUser.h
+END
+SSPocketErrorInfo.h
+K 25
+svn:wc:ra_dav:version-url
+V 178
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/PocketConnection.framework/Headers/SSPocketErrorInfo.h
+END
+ISSPocketApp.h
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/PocketConnection.framework/Headers/ISSPocketApp.h
+END
+PocketConnection.h
+K 25
+svn:wc:ra_dav:version-url
+V 177
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/PocketConnection.framework/Headers/PocketConnection.h
+END
+SSPocketCredential.h
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/PocketConnection.framework/Headers/SSPocketCredential.h
+END

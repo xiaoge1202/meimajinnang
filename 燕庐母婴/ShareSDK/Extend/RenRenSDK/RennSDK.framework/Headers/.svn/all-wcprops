@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 155
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Extend/RenRenSDK/RennSDK.framework/Headers
+END
+RennHttpRequest.h
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Extend/RenRenSDK/RennSDK.framework/Headers/RennHttpRequest.h
+END
+RennLoginService.h
+K 25
+svn:wc:ra_dav:version-url
+V 174
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Extend/RenRenSDK/RennSDK.framework/Headers/RennLoginService.h
+END
+RennClient.h
+K 25
+svn:wc:ra_dav:version-url
+V 168
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Extend/RenRenSDK/RennSDK.framework/Headers/RennClient.h
+END
+RennParam.h
+K 25
+svn:wc:ra_dav:version-url
+V 167
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Extend/RenRenSDK/RennSDK.framework/Headers/RennParam.h
+END
+RennService.h
+K 25
+svn:wc:ra_dav:version-url
+V 169
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Extend/RenRenSDK/RennSDK.framework/Headers/RennService.h
+END
+RennSDK.h
+K 25
+svn:wc:ra_dav:version-url
+V 165
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Extend/RenRenSDK/RennSDK.framework/Headers/RennSDK.h
+END
+RennAccessToken.h
+K 25
+svn:wc:ra_dav:version-url
+V 173
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Extend/RenRenSDK/RennSDK.framework/Headers/RennAccessToken.h
+END

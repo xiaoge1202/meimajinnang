@@ -7,8 +7,14 @@
 //
 
 #import "Search-VC.h"
+#import "NavigationInteractiveTransition.h"
 
-@interface Search_VC ()
+@interface Search_VC ()<UIGestureRecognizerDelegate>
+@property (nonatomic, weak) UIPanGestureRecognizer *popRecognizer;
+/**
+ *  方案一不需要的变量
+ */
+@property (nonatomic, strong) NavigationInteractiveTransition *navT;
 @end
 
 @implementation Search_VC
@@ -52,6 +58,15 @@
      [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"导航栏"] forBarMetrics:UIBarMetricsDefault];
     
 
+    if ([self.searchStr isEqualToString:@"1"]) {
+        UIButton *backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        backBtn.frame = CGRectMake(10, 16, 12, 20);
+        [backBtn setImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
+        [backBtn addTarget:self action:@selector(backViewController) forControlEvents:UIControlEventTouchUpInside];
+        UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:backBtn];
+        self.navigationItem.leftBarButtonItem = leftItem;
+    }
+    
     //取消导航栏和状态栏的边缘延展效果
     self.modalPresentationCapturesStatusBarAppearance = NO;
     self.edgesForExtendedLayout = UIRectEdgeNone;
@@ -98,7 +113,13 @@
     [self.searchBar addSubview:self.speechBtn];
 
 
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, self.searchBarBackGroundView.frame.origin.y+self.searchBarBackGroundView.frame.size.height+7, ScreenWidth, ScreenHeight-160) style:UITableViewStylePlain];
+    if ([self.searchStr isEqualToString:@"1"]) {
+        self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, self.searchBarBackGroundView.frame.origin.y+self.searchBarBackGroundView.frame.size.height+7, ScreenWidth, ScreenHeight-116) style:UITableViewStylePlain];
+    }
+    else
+    {
+        self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, self.searchBarBackGroundView.frame.origin.y+self.searchBarBackGroundView.frame.size.height+7, ScreenWidth, ScreenHeight-160) style:UITableViewStylePlain];
+    }
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     self.tableView.backgroundColor = RGBA(235, 235, 235, 1);
@@ -112,8 +133,56 @@
     self.headTitleLab.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:12];
     self.headTitleLab.backgroundColor = RGBA(237, 119, 147, 1);
     self.tableView.tableHeaderView = self.headTitleLab;
+    
+    UIGestureRecognizer *gesture = self.navigationController.interactivePopGestureRecognizer;
+    gesture.enabled = NO;
+    UIView *gestureView = gesture.view;
+    
+    UIPanGestureRecognizer *popRecognizer = [[UIPanGestureRecognizer alloc] init];
+    popRecognizer.delegate = self;
+    popRecognizer.maximumNumberOfTouches = 1;
+    [gestureView addGestureRecognizer:popRecognizer];
+    
+    //    #if USE_方案一
+    //        _navT = [[NavigationInteractiveTransition alloc] initWithViewController:self];
+    //        [popRecognizer addTarget:_navT action:@selector(handleControllerPop:)];
+    //
+    //    #elif USE_方案二
+    /**
+     *  获取系统手势的target数组
+     */
+    NSMutableArray *_targets = [gesture valueForKey:@"_targets"];
+    /**
+     *  获取它的唯一对象，我们知道它是一个叫UIGestureRecognizerTarget的私有类，它有一个属性叫_target
+     */
+    id gestureRecognizerTarget = [_targets firstObject];
+    /**
+     *  获取_target:_UINavigationInteractiveTransition，它有一个方法叫handleNavigationTransition:
+     */
+    id navigationInteractiveTransition = [gestureRecognizerTarget valueForKey:@"_target"];
+    /**
+     *  通过前面的打印，我们从控制台获取出来它的方法签名。
+     */
+    SEL handleTransition = NSSelectorFromString(@"handleNavigationTransition:");
+    /**
+     *  创建一个与系统一模一样的手势，我们只把它的类改为UIPanGestureRecognizer
+     */
+    [popRecognizer addTarget:navigationInteractiveTransition action:handleTransition];
+    // Do any additional setup after loading the view.
+    //#endif
 }
 
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+    /**
+     *  这里有两个条件不允许手势执行，1、当前控制器为根控制器；2、如果这个push、pop动画正在执行（私有属性）
+     */
+    return self.navigationController.viewControllers.count != 1 && ![[self.navigationController valueForKey:@"_isTransitioning"] boolValue];
+}
+
+-(void)backViewController
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
 
 -(void)pushToSearchResultView
 {

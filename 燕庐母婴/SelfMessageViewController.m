@@ -19,20 +19,29 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.navigationItem.title = @"个 人 信 息";
+   
+    
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"导航栏"] forBarMetrics:UIBarMetricsDefault];
-    self.view.backgroundColor = [UIColor whiteColor];
+    
+    /*-------------状态栏改变背景颜色-----------*/
+//    UIView *head = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 20)];
+//    head.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
+//    [self.navigationController.view addSubview:head];
+    
+    self.view.backgroundColor = RGBA(235, 235, 235, 1);
+
     
     //返回按钮
     self.backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.backBtn.frame = CGRectMake(20, 14, 16, 20);
-    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    self.backBtn.frame = CGRectMake(10, 16, 12, 20);
+    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [self.backBtn addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.backBtn];
     self.navigationItem.leftBarButtonItem = leftItem;
     
     self.messageArr = @[@"背景图",@"头像",@"昵称",@"当前状态"];
     
-    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight-114) style:UITableViewStylePlain];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight-70) style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
     [self setExtraCellLineHidden:self.tableView];
@@ -57,7 +66,14 @@
 {
     self.touxiangImg = [[UIImageView alloc] initWithFrame:CGRectMake(ScreenWidth-70, 5, 40, 40)];
     //self.touxiangImg.image = self.touxiang;
-    [NSThread detachNewThreadSelector:@selector(loadLabelTableView:) toTarget:self withObject:self.touxiang];
+    if ([self.touxiang isEqualToString:@"头像"]) {
+        self.touxiangImg.image = [UIImage imageNamed:@"头像"];
+    }
+    else
+    {
+        [NSThread detachNewThreadSelector:@selector(loadLabelTableView:) toTarget:self withObject:self.touxiang];
+    }
+    
     NSLog(@"touxiang==============%@",self.touxiang);
     
     self.nameLabel = [[UILabel alloc] initWithFrame:CGRectMake(100, 15, ScreenWidth-130, 20)];
@@ -68,16 +84,26 @@
     self.backImg = [[UIImageView alloc] initWithFrame:CGRectMake(ScreenWidth-97, 5, 67, 35)];
     self.backImg.image = self.back;
     
-    self.babybirthLabel = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth-100, 15, 70, 20)];
+    self.babybirthLabel = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth-180, 15, 150, 20)];
     self.babybirthLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:16];
     self.babybirthLabel.textAlignment = NSTextAlignmentRight;
-    //NSLog(@"状态:%@",self.state);
-    self.babybirthLabel.text = self.state;
+    NSLog(@"状态:%@",self.state);
+    if ([self.state isEqualToString:@"1"]) {
+        self.babybirthLabel.text = @"备孕中";
+    }
+    else if ([self.state isEqualToString:@"2"])
+    {
+        self.babybirthLabel.text = @"怀孕中";
+    }
+    else
+    {
+        self.babybirthLabel.text = @"已出生";
+    }
 }
 
 -(void)goBack:(UIButton*)sender
 {
-    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -138,6 +164,9 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    
     SetNameViewController *setnameVC = [[SetNameViewController alloc] init];
     setnameVC.nameStr = self.nameLabel.text;
     
@@ -165,6 +194,8 @@
         default:
             break;
     }
+    
+    [[self.tableView cellForRowAtIndexPath:indexPath] setHighlighted:NO animated:NO];
 }
 
 - (void)clickTouxiangBtn

@@ -42,6 +42,8 @@
 
 @property (strong,nonatomic) NSArray *dataArr;//存放分类信息
 
+@property (strong,nonatomic) NSString *searchStr;
+
 ////播放控制器
 //@property (strong,nonatomic) MPMoviePlayerController *moviePlayerCtl;
 

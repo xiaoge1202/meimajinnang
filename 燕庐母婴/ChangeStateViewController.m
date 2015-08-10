@@ -17,13 +17,22 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.navigationItem.title = @"选 择 您 当 前 的 状 态";
+
+    
     [self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"导航栏"] forBarMetrics:UIBarMetricsDefault];
-    self.view.backgroundColor = [UIColor whiteColor];
+    
+    /*-------------状态栏改变背景颜色-----------*/
+//    UIView *head = [[UIView alloc]initWithFrame:CGRectMake(0, 0, ScreenWidth, 20)];
+//    head.backgroundColor = [UIColor colorWithRed:248.0f/255.0f green:248.0f/255.0f blue:248.0f/255.0f alpha:1];
+//    [self.navigationController.view addSubview:head];
+    
+    self.view.backgroundColor = RGBA(235, 235, 235, 1);
+
     
     //返回按钮
     self.backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.backBtn.frame = CGRectMake(20, 14, 16, 20);
-    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    self.backBtn.frame = CGRectMake(10, 16, 12, 20);
+    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [self.backBtn addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.backBtn];
     self.navigationItem.leftBarButtonItem = leftItem;
@@ -34,20 +43,20 @@
     backgroundView.image = [UIImage imageNamed:@"页面背景"];
     [self.view addSubview:backgroundView];
     
-    self.beiyunBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.beiyunBtn.frame = CGRectMake(156, 88, 106, 91);
-    [self.beiyunBtn setImage:[UIImage imageNamed:@"备孕中"] forState:UIControlStateNormal];
-    [self.beiyunBtn addTarget:self action:@selector(clickStateBtn1:) forControlEvents:UIControlEventTouchUpInside];
-    [backgroundView addSubview:self.beiyunBtn];
-    
     self.huaiyunBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.huaiyunBtn.frame = CGRectMake(40, 172, 106, 91);
+    self.huaiyunBtn.frame = CGRectMake((ScreenWidth-232)/2, ScreenHeight/2-109, 106, 91);
     [self.huaiyunBtn setImage:[UIImage imageNamed:@"已怀孕"] forState:UIControlStateNormal];
     [self.huaiyunBtn addTarget:self action:@selector(clickStateBtn2:) forControlEvents:UIControlEventTouchUpInside];
     [backgroundView addSubview:self.huaiyunBtn];
     
+    self.beiyunBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.beiyunBtn.frame = CGRectMake(self.huaiyunBtn.frame.origin.x+self.huaiyunBtn.frame.size.width+20, (ScreenHeight-258)/3, 106, 91);
+    [self.beiyunBtn setImage:[UIImage imageNamed:@"备孕中"] forState:UIControlStateNormal];
+    [self.beiyunBtn addTarget:self action:@selector(clickStateBtn1:) forControlEvents:UIControlEventTouchUpInside];
+    [backgroundView addSubview:self.beiyunBtn];
+    
     self.chushengBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.chushengBtn.frame = CGRectMake(ScreenWidth-155, ScreenHeight-309, 106, 91);
+    self.chushengBtn.frame = CGRectMake(self.huaiyunBtn.frame.origin.x+self.huaiyunBtn.frame.size.width+20, self.huaiyunBtn.frame.origin.y+self.huaiyunBtn.frame.size.height, 106, 91);
     [self.chushengBtn setImage:[UIImage imageNamed:@"宝宝已出生"] forState:UIControlStateNormal];
     [self.chushengBtn addTarget:self action:@selector(clickStateBtn3:) forControlEvents:UIControlEventTouchUpInside];
     [backgroundView addSubview:self.chushengBtn];
@@ -57,7 +66,18 @@
 
 -(void)goBack:(UIButton*)sender
 {
-    [self.navigationController popViewControllerAnimated:YES];
+    if ([self.nameString isEqual:@"1"]) {
+        TabBar_VC *tab = [[TabBar_VC alloc]init];
+        [self presentViewController:tab animated:YES completion:nil];
+        self.nameString = @"";
+        if (self.messageArr.count>0) {
+            [self.delegate getMesArr:self.messageArr];
+        }
+    }
+    else
+    {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 -(void)clickStateBtn1:(UIButton*)sender
@@ -113,19 +133,26 @@
     
     NSMutableDictionary *zhuangtaiDic = [[NSMutableDictionary alloc] init];
     [zhuangtaiDic setObject:zhanghao forKey:@"username"];
-    [zhuangtaiDic setObject:@"备孕中" forKey:@"zhuangtai"];
+    [zhuangtaiDic setObject:@"1" forKey:@"zhuangtai"];
     
     [self.manager POST:@"http://101.200.234.127:8080/YanLu/user/update.do" parameters:zhuangtaiDic success:^(AFHTTPRequestOperation *operation, id responseObject) {
         NSLog(@"获取成功");
         
-        NSData *data = (NSData*)responseObject;
+        //NSData *data = (NSData*)responseObject;
         
-        self.dataArr = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        //self.dataArr = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
         NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
         [ud removeObjectForKey:@"zhuangtai"];
-        [ud setObject:@"备孕中" forKey:@"zhuangtai"];
+        [ud setObject:@"1" forKey:@"zhuangtai"];
         [ud synchronize];
-        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+//        if ([self.nameString isEqual:@"1"]) {
+//            [self.navigationController dismissViewControllerAnimated:YES completion:nil];
+//        }
+//        else
+//        {
+            TabBar_VC *tab = [[TabBar_VC alloc]init];
+            [self presentViewController:tab animated:YES completion:nil];
+        //}
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"获取服务器失败");
         [[[UIAlertView alloc] initWithTitle:@"修改失败" message:@"网络错误，请重试" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil] show];
@@ -135,12 +162,14 @@
 -(void)clickStateBtn2:(UIButton*)sender
 {
     SetDueDateViewController *setDueVC = [[SetDueDateViewController alloc] init];
+    setDueVC.nameString = @"1";
     [self.navigationController pushViewController:setDueVC animated:YES];
 }
 
 -(void)clickStateBtn3:(UIButton*)sender
 {
     SetBirthDateViewController *setBirthVC = [[SetBirthDateViewController alloc] init];
+    setBirthVC.nameString = @"1";
     [self.navigationController pushViewController:setBirthVC animated:YES];
 }
 

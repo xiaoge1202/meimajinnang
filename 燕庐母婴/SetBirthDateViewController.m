@@ -32,8 +32,8 @@
     
     //返回按钮
     self.backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.backBtn.frame = CGRectMake(20, 14, 16, 20);
-    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    self.backBtn.frame = CGRectMake(10, 16, 12, 20);
+    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [self.backBtn addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.backBtn];
     self.navigationItem.leftBarButtonItem = leftItem;
@@ -172,32 +172,13 @@
                    failure:^(AFHTTPRequestOperation *operation, NSError *error){
                        NSLog(@"获取服务器响应出错！");
                    }];
-        
+        [self setupState];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         NSLog(@"获取服务器失败");
         [[[UIAlertView alloc] initWithTitle:@"修改失败" message:@"网络错误，请重试" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil] show];
     }];
     
-    NSMutableDictionary *zhuangtaiDic = [[NSMutableDictionary alloc] init];
-    [zhuangtaiDic setObject:zhanghao forKey:@"username"];
-    [zhuangtaiDic setObject:@"已出生" forKey:@"zhuangtai"];
     
-    [self.manager POST:@"http://101.200.234.127:8080/YanLu/user/update.do" parameters:zhuangtaiDic success:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSLog(@"获取成功");
-        
-        NSData *data = (NSData*)responseObject;
-        
-        self.dataArr = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
-        NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
-        [ud removeObjectForKey:@"zhuangtai"];
-        [ud setObject:@"已出生" forKey:@"zhuangtai"];
-        [ud synchronize];
-        TabBar_VC *tab = [[TabBar_VC alloc]init];
-        [self presentViewController:tab animated:YES completion:nil];
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"获取服务器失败");
-        [[[UIAlertView alloc] initWithTitle:@"修改失败" message:@"网络错误，请重试" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil] show];
-    }];
     
 //    if ([self.nameString isEqual:@"1"]) {
 //        [self.navigationController dismissViewControllerAnimated:YES completion:nil];
@@ -206,6 +187,36 @@
 //    {
     
     //}
+}
+
+-(void)setupState
+{
+    NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+    
+    NSMutableDictionary *zhuangtaiDic = [[NSMutableDictionary alloc] init];
+    NSString *zhanghao = [ud objectForKey:@"username"];
+    [zhuangtaiDic setObject:zhanghao forKey:@"username"];
+    [zhuangtaiDic setObject:@"3" forKey:@"zhuangtai"];
+    
+    
+    self.manager = [AFHTTPRequestOperationManager manager];
+    self.manager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
+    [self.manager POST:@"http://101.200.234.127:8080/YanLu/user/update.do" parameters:zhuangtaiDic success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"获取成功");
+        
+        NSData *data = (NSData*)responseObject;
+        
+        self.dataArr = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        NSUserDefaults *ud = [NSUserDefaults standardUserDefaults];
+        [ud removeObjectForKey:@"zhuangtai"];
+        [ud setObject:@"3" forKey:@"zhuangtai"];
+        [ud synchronize];
+        TabBar_VC *tab = [[TabBar_VC alloc]init];
+        [self presentViewController:tab animated:YES completion:nil];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"获取服务器失败");
+        [[[UIAlertView alloc] initWithTitle:@"修改失败" message:@"网络错误，请重试" delegate:self cancelButtonTitle:@"确定" otherButtonTitles:nil, nil] show];
+    }];
 }
 
 //datapicker值攺变事件

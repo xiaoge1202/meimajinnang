@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
-
+#import "PrefixHeader.pch"
+#import "Beiyun-VC.h"
 @interface MoreZhishi_VC : UIViewController
 
 @end

@@ -1,0 +1,24 @@
+//
+//  EnterViewController.h
+//  帖子列表
+//
+//  Created by 董飞剑 on 15/1/10.
+//  Copyright (c) 2015年 DongFeiJian. All rights reserved.
+
+
+//》》》》》》》》》》》》》》登陆页面《《《《《《《《《《《《《《《《《《《
+
+#import <UIKit/UIKit.h>
+#import "AFHTTPRequestOperationManager.h"
+#import "PrefixHeader.pch"
+#import "LoginViewController.h"
+#import "ForgetPassword-VC.h"
+#import "UserModel.h"
+#import "ChangeStateViewController.h"
+@interface EnterViewController : UIViewController
+
+@property (nonatomic,strong) AFHTTPRequestOperationManager *manager;
+@property (nonatomic,strong) NSArray *dataArr;
+@property (nonatomic,strong) NSString *username;
+
+@end

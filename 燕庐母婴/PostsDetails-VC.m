@@ -661,7 +661,7 @@
     //返回按钮
     self.backBtn = [UIButton buttonWithType:UIButtonTypeCustom];
     self.backBtn.frame = CGRectMake(20, 14, 16, 20);
-    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"返回"] forState:UIControlStateNormal];
+    [self.backBtn setBackgroundImage:[UIImage imageNamed:@"back"] forState:UIControlStateNormal];
     [self.backBtn addTarget:self action:@selector(goBack:) forControlEvents:UIControlEventTouchUpInside];
     UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithCustomView:self.backBtn];
     self.navigationItem.leftBarButtonItem = leftItem;
@@ -979,6 +979,7 @@
                                                userInfo:images1
                                                 repeats:YES];
                 // [self.tableView reloadData];
+                NSLog(@"收藏成功");
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 
                 NSLog(@"失败");
@@ -2492,6 +2493,8 @@
         
     }else{
         
+        flag=YES;
+        
         [UIView beginAnimations:@"Animation" context:nil];
         //设置动画的间隔时间
         [UIView setAnimationDuration:0.20];
@@ -2529,8 +2532,8 @@
         }
         
         //self.view.frame = CGRectMake(0, 0, ScreenWidth, ScreenHeight);
-       // toolBar.frame=CGRectMake(0,0, ScreenWidth,53);
-        // toolBar.backgroundColor=[UIColor grayColor];
+        //toolBar.frame=CGRectMake(0,0, ScreenWidth,53);
+         toolBar.backgroundColor=RGBA(214, 214, 214, 1);
         //    if(xiaoView.frame.size.height>30){
         if(status == NO){
             toolBar.frame=CGRectMake(0, self.view.frame.size.height - (250 + toolBar.frame.size.height), ScreenWidth,53);
@@ -2538,7 +2541,7 @@
             toolBar.frame=CGRectMake(0, self.view.frame.size.height - (180 + toolBar.frame.size.height), ScreenWidth,53);
         }
         
-        flag=YES;
+        
         
     }
     NSLog(@"%ld",(long)counts);
@@ -2711,13 +2714,14 @@
 }
 
 -(void)textViewDidChange:(UITextView *)textView{
+    flag = YES;
     [self textViewChangeText:textView];
     
-    if ([textView.text length] == 0) {
-        [label setHidden:NO];
-    }else{
-        [label setHidden:YES];
-    }
+//    if ([textView.text length] == 0) {
+//        [label setHidden:NO];
+//    }else{
+//        [label setHidden:YES];
+//    }
 
 }
 
@@ -3429,13 +3433,13 @@
 {
     //self.view.frame = CGRectMake(0, 0, ScreenWidth, ScreenHeight);
   //  toolBar.frame=CGRectMake(0,0, ScreenWidth,53);
-   // toolBar.backgroundColor=[UIColor grayColor];
+    toolBar.backgroundColor=RGBA(214, 214, 214, 1);
 //    if(xiaoView.frame.size.height>30){
-    if(status == NO){
-    toolBar.frame=CGRectMake(0, self.view.frame.size.height - (251 + toolBar.frame.size.height), ScreenWidth,53);
-    }else{
+//    if(status == NO){
+//    toolBar.frame=CGRectMake(0, self.view.frame.size.height - (251 + toolBar.frame.size.height), ScreenWidth,53);
+//    }else{
     toolBar.frame=CGRectMake(0, self.view.frame.size.height - (180 + toolBar.frame.size.height), ScreenWidth,53);
-    }
+//    }
     
     
    // }

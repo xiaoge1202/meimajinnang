@@ -12,6 +12,9 @@
 #import "ArticlDetailsViewController.h"
 #import "PostsDetails-VC.h"
 #import "NutritionCenterVC.h"
+#import "Search-VC.h"
+#import "MomTV-VC.h"
+#import "Message_VC.h"
 @interface AlreadyBaby_ViewController : UIViewController<UITableViewDataSource,UITableViewDelegate,UIScrollViewDelegate,UISearchBarDelegate,UITextViewDelegate>
 
 
@@ -30,7 +33,7 @@
 @property (strong,nonatomic) NSArray *chengzhangArr;
 
 //@property (strong,nonatomic) UISearchBar *searchBar;
-@property (strong,nonatomic) UITextView *searchText;
+@property (strong,nonatomic) UIButton *searchText;
 
 @property (strong,nonatomic) UIScrollView *titleScrollView;
 
@@ -47,5 +50,6 @@
 @property (nonatomic,strong) NSMutableArray *titleArr;
 @property (nonatomic,strong) NSMutableArray *sizesArr;
 
+@property (nonatomic,strong) NSString *t_id;
 
 @end

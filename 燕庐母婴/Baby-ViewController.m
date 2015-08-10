@@ -7,6 +7,7 @@
 //
 
 #import "Baby-ViewController.h"
+#import "NavigationInteractiveTransition.h"
 
 @interface Baby_ViewController ()
 {
@@ -41,6 +42,11 @@
     
     UIButton *playBtn;
 }
+@property (nonatomic, weak) UIPanGestureRecognizer *popRecognizer;
+/**
+ *  方案一不需要的变量
+ */
+@property (nonatomic, strong) NavigationInteractiveTransition *navT;
 @end
 
 @implementation Baby_ViewController
@@ -50,10 +56,11 @@
     [self getud];
     [self postDataFromServer];
     //[self.tableView reloadData];
-    [self addSearchTextNav];
     
-    self.imgView.hidden = NO;
-    playBtn.hidden = NO;
+}
+- (void)viewDidAppear:(BOOL)animated
+{
+    [self addSearchTextNav];
 }
 
 -(void)getud
@@ -63,12 +70,13 @@
     huaiyuntianshu = [self.ud objectForKey:@"huaiyuntianshu"];
     //huaiyuntianshu = @"180";
     NSLog(@"44444999999999   %@",huaiyuntianshu);
-    zhuangtai = [self.ud objectForKey:@"zhuangtai"];
+    //zhuangtai = [self.ud objectForKey:@"zhuangtai"];
 }
 
 //获取每日提醒接口数据
 -(void)addmeiriTingxing:(NSString*)tianshuStr
 {
+    
     //[@{@"time":huaiyuntianshu}mutableCopy]
     self.manager = [AFHTTPRequestOperationManager manager];
     self.manager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
@@ -93,6 +101,7 @@
     [dic setObject:zileiId forKey:@"zilei_id"];
     [dic setObject:start forKey:@"start"];
     [dic setObject:tianshuStr forKey:@"huaiyun"];
+    [dic setObject:@"2" forKey:@"t_id"];
     
     self.manager = [AFHTTPRequestOperationManager manager];
     self.manager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
@@ -109,10 +118,14 @@
 
 -(void)addTuijianzhishi:(NSString*)tianshuStr
 {
+    NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+    
+    [dic setObject:tianshuStr forKey:@"time"];
+    [dic setObject:@"2" forKey:@"t_id"];
     //[@{@"time":huaiyuntianshu}mutableCopy]
     self.manager = [AFHTTPRequestOperationManager manager];
     self.manager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
-    [self.manager GET:@"http://101.200.234.127:8080/YanLu/jinribidu/list.do" parameters:[@{@"time":tianshuStr}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    [self.manager GET:@"http://101.200.234.127:8080/YanLu/jinribidu/list.do" parameters:dic success:^(AFHTTPRequestOperation *operation, id responseObject) {
         
         NSData *data = (NSData *)responseObject;
         self.knowledgeArr =[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
@@ -125,10 +138,14 @@
 
 -(void)addMeizhoubibei:(NSString*)tianshuStr
 {
+    NSMutableDictionary *dic = [[NSMutableDictionary alloc] init];
+    
+    [dic setObject:tianshuStr forKey:@"shijian"];
+    [dic setObject:@"2" forKey:@"t_id"];
     //[@{@"shijian":huaiyuntianshu}mutableCopy]
     self.manager = [AFHTTPRequestOperationManager manager];
     self.manager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
-    [self.manager GET:@"http://101.200.234.127:8080/YanLu/benzhoubibei/list.do" parameters:[@{@"shijian":tianshuStr}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+    [self.manager GET:@"http://101.200.234.127:8080/YanLu/benzhoubibei/list.do" parameters:dic success:^(AFHTTPRequestOperation *operation, id responseObject) {
         
         NSData *data = (NSData *)responseObject;
         self.mustPrepareArr =[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
@@ -161,8 +178,9 @@
     self.titleArr = [[NSMutableArray alloc] init];
     self.sizesArr = [[NSMutableArray alloc] init];
     self.shipinArr = [[NSMutableArray alloc] init];
-    if (tianshu>1&&tianshu<280) {
+    if (tianshu>1&&tianshu<279) {
         for (int i = 0; i<3; i++) {
+            
             [self.manager GET:@"http://101.200.234.127:8080/YanLu/chengzhang/list.do" parameters:[@{@"huaiyuntime":[NSString stringWithFormat:@"%d",tianshu+1-i]}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
                 
                 NSData *data = (NSData *)responseObject;
@@ -193,7 +211,7 @@
         }
     }
     
-    else if(tianshu == 1 || tianshu == 280)
+    else if(tianshu == 1 || tianshu == 279)
     {
         [self.manager GET:@"http://101.200.234.127:8080/YanLu/chengzhang/list.do" parameters:[@{@"huaiyuntime":[NSString stringWithFormat:@"%d",tianshu]}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
             
@@ -261,10 +279,32 @@
                }];
 }
 
+//-(void)getZhuangtai
+//{
+//    self.manager = [AFHTTPRequestOperationManager manager];
+//    self.manager.responseSerializer = [[AFHTTPResponseSerializer alloc] init];
+//    [self.manager GET:@"http://101.200.234.127:8080/YanLu/usertype/list.do" parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+//        NSData *data = (NSData*)responseObject;
+//        self.zhuangtaiArr = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+//        for (int i = 0; i<self.zhuangtaiArr.count; i++) {
+//            if ([[[self.zhuangtaiArr objectAtIndex:i] objectForKey:@"t_neirong"] isEqualToString:zhuangtai]) {
+//                self.t_id = [[self.zhuangtaiArr objectAtIndex:i] objectForKey:@"id"];
+//                NSLog(@"hhhhhhhhhhhhh %@",self.t_id);
+//            }
+//        }
+//    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+//        NSLog(@"8777777获取服务器失败");
+//    }];
+//}
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     [self getud];
+    
+    //[self getZhuangtai];
+    
+    
     
     [self addchengzhangjilu:[huaiyuntianshu integerValue]];
     [self postDataFromServer];
@@ -289,15 +329,64 @@
     
     
     
-    self.tableArr = @[@"每日提醒",@"营养中心",@"推荐知识",@"每周推荐物品",@"同龄热搜贴"];
-    self.imgArr = @[@"提醒",@"营养",@"推荐",@"必备",@"热贴"];
-    self.textArr = @[@"为了宝贝一定要按时遵守哦！",@"让宝贝更好的吸收营养",@"做您孕期最坚实的后盾",@"呵护宝宝，呵护您",@"跟姐妹们聊一聊育儿经"];
+    self.tableArr = @[@"每日提醒",@"美妈推荐",@"营养中心",@"每周必备物品",@"同龄热搜贴"];
+    self.imgArr = @[@"提醒",@"推荐",@"营养",@"必备",@"热贴"];
+    self.textArr = @[@"为了宝贝一定要按时遵守哦！",@"做您孕期最坚实的后盾",@"让宝贝更好的吸收营养",@"呵护宝宝，呵护您",@"跟姐妹们聊一聊育儿经"];
     
     
     [self creatTableView];
     
+    UIGestureRecognizer *gesture = self.navigationController.interactivePopGestureRecognizer;
+    gesture.enabled = NO;
+    gesture.delegate =self;
+    UIView *gestureView = gesture.view;
+    
+    UIPanGestureRecognizer *popRecognizer = [[UIPanGestureRecognizer alloc] init];
+    popRecognizer.delegate = self;
+    popRecognizer.maximumNumberOfTouches = 1;
+    [gestureView addGestureRecognizer:popRecognizer];
+    
+    
+    //#if USE_方案一
+    //    _navT = [[NavigationInteractiveTransition alloc] initWithViewController:self];
+    //    [popRecognizer addTarget:_navT action:@selector(handleControllerPop:)];
+    //
+    //#elif USE_方案二
+    /**
+     *  获取系统手势的target数组
+     */
+    NSMutableArray *_targets = [gesture valueForKey:@"_targets"];
+    /**
+     *  获取它的唯一对象，我们知道它是一个叫UIGestureRecognizerTarget的私有类，它有一个属性叫_target
+     */
+    id gestureRecognizerTarget = [_targets firstObject];
+    /**
+     *  获取_target:_UINavigationInteractiveTransition，它有一个方法叫handleNavigationTransition:
+     */
+    id navigationInteractiveTransition = [gestureRecognizerTarget valueForKey:@"_target"];
+    /**
+     *  通过前面的打印，我们从控制台获取出来它的方法签名。
+     */
+    SEL handleTransition = NSSelectorFromString(@"handleNavigationTransition:");
+    /**
+     *  创建一个与系统一模一样的手势，我们只把它的类改为UIPanGestureRecognizer
+     */
+    [popRecognizer addTarget:navigationInteractiveTransition action:handleTransition];
+    //#endif
+    
     // Do any additional setup after loading the view.
 }
+
+
+
+
+
+//- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+//    /**
+//     *  这里有两个条件不允许手势执行，1、当前控制器为根控制器；2、如果这个push、pop动画正在执行（私有属性）
+//     */
+//    return self.navigationController.viewControllers.count != 1 && ![[self.navigationController valueForKey:@"_isTransitioning"] boolValue];
+//}
 
 -(void)addSearchTextNav
 {
@@ -361,6 +450,7 @@
 {
     Search_VC *seachVC = [[Search_VC alloc] init];
     seachVC.hidesBottomBarWhenPushed = YES;
+    seachVC.searchStr = @"1";
     for (UIView *subviews in [self.navigationController.view subviews]) {
         if (subviews.tag==66) {
             [subviews removeFromSuperview];
@@ -411,7 +501,15 @@
 
 -(void)clickEvenlopeBtn
 {
-    
+    for (UIView *subviews in [self.navigationController.view subviews]) {
+        if (subviews.tag==66) {
+            [subviews removeFromSuperview];
+        }
+    }
+    Message_VC *mesg =[[Message_VC alloc]init];
+    mesg.hidesBottomBarWhenPushed = YES;
+    // Message_VC.idCount = self.circleID;
+    [self.navigationController pushViewController:mesg animated:YES];
 }
 
 -(void)creatTableView
@@ -437,11 +535,11 @@
             break;
             
         case 1:
-            return self.yingyangArr.count;
+            return self.knowledgeArr.count;
             break;
             
         case 2:
-            return self.knowledgeArr.count;
+            return self.yingyangArr.count;
             break;
             
         case 3:
@@ -536,17 +634,29 @@
             }
             else
             {
-                UILabel *timelabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 12, 160, 14)];
+                cell.selectionStyle = UITableViewCellSelectionStyleNone;
+                UILabel *timelabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 12, 60, 14)];
                 timelabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:14];
                 timelabel.textColor = RGBA(89, 87, 87, 1);
                 timelabel.text = [[self.tixingArr objectAtIndex:indexPath.row] objectForKey:@"tixingtime"];
                 [cell addSubview:timelabel];
                 
-                UILabel *zhishiLabel = [[UILabel alloc] initWithFrame:CGRectMake(timelabel.frame.origin.x+timelabel.frame.size.width+20, 12, ScreenWidth-(timelabel.frame.origin.x+timelabel.frame.size.width+20), 14)];
-                zhishiLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:14];
-                zhishiLabel.textColor = RGBA(89, 87, 87, 1);
-                zhishiLabel.text = [[self.tixingArr objectAtIndex:indexPath.row] objectForKey:@"neirong"];
-                [cell addSubview:zhishiLabel];
+                if ([timelabel.text isEqualToString:@""]) {
+                    UILabel *zhishiLabel = [[UILabel alloc] initWithFrame:CGRectMake(20, 12, ScreenWidth-60, 14)];
+                    zhishiLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:14];
+                    zhishiLabel.textColor = RGBA(89, 87, 87, 1);
+                    zhishiLabel.text = [[self.tixingArr objectAtIndex:indexPath.row] objectForKey:@"neirong"];
+                    [cell addSubview:zhishiLabel];
+                }
+                else
+                {
+                    UILabel *zhishiLabel = [[UILabel alloc] initWithFrame:CGRectMake(timelabel.frame.origin.x+timelabel.frame.size.width+20, 12, ScreenWidth-(timelabel.frame.origin.x+timelabel.frame.size.width+20), 14)];
+                    zhishiLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:14];
+                    zhishiLabel.textColor = RGBA(89, 87, 87, 1);
+                    zhishiLabel.text = [[self.tixingArr objectAtIndex:indexPath.row] objectForKey:@"neirong"];
+                    [cell addSubview:zhishiLabel];
+                }
+                
             }
             break;
             
@@ -574,7 +684,7 @@
             [cell addSubview:huifuImg];
             [cell addSubview:huifuLabel];
             switch (indexPath.section) {
-                case 1:
+                case 2:
                     group1=[[NSDictionary alloc]initWithObjectsAndKeys:indexPath,@"indexpath",cell,@"cell", nil];
                     [NSThread detachNewThreadSelector:@selector(loadLabelTableView:) toTarget:self withObject:group1];
                     neironglabel.text = [[self.yingyangArr objectAtIndex:indexPath.row] objectForKey:@"biaoti"];
@@ -582,7 +692,7 @@
                     huifuLabel.text = [[self.yingyangArr objectAtIndex:indexPath.row] objectForKey:@"pinglun"];
                     break;
                     
-                case 2:
+                case 1:
                     
                     group2=[[NSDictionary alloc]initWithObjectsAndKeys:indexPath,@"indexpath",cell,@"cell", nil];
                     [NSThread detachNewThreadSelector:@selector(loadLabelTableView:) toTarget:self withObject:group2];
@@ -638,34 +748,30 @@
 {
     if (section == 0) {
         if (self.sizesArr.count>2) {
-            return ScreenHeight*0.72+58+[[self.sizesArr objectAtIndex:1] integerValue];
+            return ScreenHeight*0.98+58+[[self.sizesArr objectAtIndex:1] integerValue];
         }
         else
         {
             if (isfirst) {
-                if ([huaiyuntianshu integerValue]==1 || [huaiyuntianshu integerValue]==280) {
-                    return ScreenHeight*0.72+58+sizes.height;
+                if ([huaiyuntianshu integerValue]==1 || [huaiyuntianshu integerValue]==279) {
+                    return ScreenHeight*0.98+58+sizes.height;
                 }
                 else
                 {
-                    return ScreenHeight*0.72+58;
+                    return ScreenHeight*0.98+58+sizes.height;
                 }
             }
             else{
-                if (width+1==1 || width+1==280) {
-                    return ScreenHeight*0.72+58+sizes.height;
+                if (width+1==1 || width+1==279) {
+                    return ScreenHeight*0.98+58+sizes.height;
                 }
                 else
                 {
-                    return ScreenHeight*0.72+58;
+                    return ScreenHeight*0.98+58+sizes.height;
                 }
             }
 
         }
-    }
-    else if(section == 2)
-    {
-        return 133;
     }
     else
     {
@@ -714,7 +820,7 @@
         
         
         if (self.sizesArr.count>2) {
-            titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight*0.72+58+[[self.sizesArr objectAtIndex:1] integerValue])];
+            titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight*0.98+58+[[self.sizesArr objectAtIndex:1] integerValue])];
         }
         
         //        else
@@ -728,16 +834,16 @@
             imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight*0.72+[[self.sizesArr objectAtIndex:1] integerValue])];
         }
         if (isfirst) {
-            if ([huaiyuntianshu integerValue]==1 || [huaiyuntianshu integerValue]==280) {
-                titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight*0.72+58+sizes.height)];
+            if ([huaiyuntianshu integerValue]==1 || [huaiyuntianshu integerValue]==279) {
+                titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight*0.98+58+sizes.height)];
                 titleView.backgroundColor = [UIColor whiteColor];
                 imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight*0.72+sizes.height)];
             }
         }
         else
         {
-            if (width+1==1 || width+1==280) {
-                titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight*0.72+58+sizes.height)];
+            if (width+1==1 || width+1==279) {
+                titleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight*0.98+58+sizes.height)];
                 titleView.backgroundColor = [UIColor whiteColor];
                 imgView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight*0.72+sizes.height)];
             }
@@ -888,7 +994,7 @@
                         afterlabel.text = [NSString stringWithFormat:@"宝宝%d天",[huaiyuntianshu integerValue]+1];
                         afterlabel1.text = [NSString stringWithFormat:@"宝宝%d天",[huaiyuntianshu integerValue]+2];
                     }
-                    else if ([huaiyuntianshu integerValue]==279)
+                    else if ([huaiyuntianshu integerValue]==278)
                     {
                         todaylabel.text = [NSString stringWithFormat:@"宝宝%@天",huaiyuntianshu];
                         beforelabel.text = [NSString stringWithFormat:@"宝宝%d天",[huaiyuntianshu integerValue]-2];
@@ -896,7 +1002,7 @@
                         afterlabel.text = [NSString stringWithFormat:@"宝宝%d天",[huaiyuntianshu integerValue]+1];
                         afterlabel1.text = @"已出生";
                     }
-                    else if ([huaiyuntianshu integerValue]==280)
+                    else if ([huaiyuntianshu integerValue]==279)
                     {
                         todaylabel.text = [NSString stringWithFormat:@"宝宝%@天",huaiyuntianshu];
                         beforelabel.text = [NSString stringWithFormat:@"宝宝%d天",[huaiyuntianshu integerValue]-2];
@@ -933,7 +1039,7 @@
                         afterlabel.text = [NSString stringWithFormat:@"宝宝%d天",width+2];
                         afterlabel1.text = [NSString stringWithFormat:@"宝宝%d天",width+3];
                     }
-                    else if (width+1==279)
+                    else if (width+1==278)
                     {
                         todaylabel.text = [NSString stringWithFormat:@"宝宝%d天",width+1];
                         beforelabel.text = [NSString stringWithFormat:@"宝宝%d天",width-1];
@@ -941,7 +1047,7 @@
                         afterlabel.text = [NSString stringWithFormat:@"宝宝%d天",width+1];
                         afterlabel1.text = @"已出生";
                     }
-                    else if (width+1==280)
+                    else if (width+1==279)
                     {
                         todaylabel.text = [NSString stringWithFormat:@"宝宝%d天",width+1];
                         beforelabel.text = [NSString stringWithFormat:@"宝宝%d天",width-1];
@@ -983,7 +1089,7 @@
             //            UIView *indexView = [[UIView alloc] initWithFrame:CGRectMake(ScreenWidth*([huaiyuntianshu integerValue]-1), 0, ScreenWidth, self.titleScrollView.frame.size.height)];
             //            indexView.tag = [huaiyuntianshu integerValue]-1;
             //            [self.titleScrollView addSubview:indexView];
-            if ([huaiyuntianshu integerValue]>1&&[huaiyuntianshu integerValue]<280) {
+            if ([huaiyuntianshu integerValue]>1&&[huaiyuntianshu integerValue]<279) {
                 for (int i = 0; i<3; i++) {
                     UIButton *todayBtn = [UIButton buttonWithType:UIButtonTypeCustom];
                     todayBtn.frame = CGRectMake(28+ScreenWidth*([huaiyuntianshu integerValue]-i), 0, 35, 34);
@@ -1030,7 +1136,7 @@
                     [tizhongBtn addSubview:tizhonglabel];
                     
                     UILabel *countlabel = [[UILabel alloc] initWithFrame:CGRectMake((0.1*jingxiangImg.frame.size.width-20)/2, tizhonglabel.frame.origin.y+tizhonglabel.frame.size.height, 20, 30)];
-                    countlabel.text = [NSString stringWithFormat:@"%@kg",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"tizhong"]];
+                    countlabel.text = [NSString stringWithFormat:@"%@",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"tizhong"]];
                     countlabel.textColor = RGBA(238, 123, 135, 1);
                     //tizhonglabel.layer.cornerRadius = 6;
                     countlabel.textAlignment = NSTextAlignmentCenter;
@@ -1073,7 +1179,7 @@
                     [shengaoBtn addSubview:shengaolabel];
                     
                     UILabel *shengaocount = [[UILabel alloc] initWithFrame:CGRectMake(shengaoBtn.frame.size.width-(0.1*jingxiangImg.frame.size.width-12)-20, shengaolabel.frame.origin.y+shengaolabel.frame.size.height, 20, 30)];
-                    shengaocount.text = [NSString stringWithFormat:@"%@cm",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"shengao"]];
+                    shengaocount.text = [NSString stringWithFormat:@"%@",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"shengao"]];
                     shengaocount.textColor = RGBA(201, 160, 99, 1);
                     //tizhonglabel.layer.cornerRadius = 6;
                     shengaocount.textAlignment = NSTextAlignmentCenter;
@@ -1110,6 +1216,7 @@
                     [self.titleScrollView addSubview:self.imgView];
                     self.imgView.tag = [huaiyuntianshu integerValue]+100+i;
                     //self.moviePlayerCtl.contentURL =[NSURL URLWithString:[[self.chengzhangArr objectAtIndex:0] objectForKey:@"video"]];
+                    
                     self.imgView.image = [UIImage imageWithVideo:[NSURL URLWithString:[[self.chengzhangArr objectAtIndex:0] objectForKey:@"video"]]];
                     
                     
@@ -1185,7 +1292,7 @@
                 [tizhongBtn addSubview:tizhonglabel];
                 
                 UILabel *countlabel = [[UILabel alloc] initWithFrame:CGRectMake((0.1*jingxiangImg.frame.size.width-20)/2, tizhonglabel.frame.origin.y+tizhonglabel.frame.size.height, 20, 30)];
-                countlabel.text = [NSString stringWithFormat:@"%@kg",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"tizhong"]];
+                countlabel.text = [NSString stringWithFormat:@"%@",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"tizhong"]];
                 countlabel.textColor = RGBA(238, 123, 135, 1);
                 //tizhonglabel.layer.cornerRadius = 6;
                 countlabel.textAlignment = NSTextAlignmentCenter;
@@ -1228,7 +1335,7 @@
                 [shengaoBtn addSubview:shengaolabel];
                 
                 UILabel *shengaocount = [[UILabel alloc] initWithFrame:CGRectMake(shengaoBtn.frame.size.width-(0.1*jingxiangImg.frame.size.width-12)-20, shengaolabel.frame.origin.y+shengaolabel.frame.size.height, 20, 30)];
-                shengaocount.text = [NSString stringWithFormat:@"%@cm",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"shengao"]];
+                shengaocount.text = [NSString stringWithFormat:@"%@",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"shengao"]];
                 shengaocount.textColor = RGBA(201, 160, 99, 1);
                 //tizhonglabel.layer.cornerRadius = 6;
                 shengaocount.textAlignment = NSTextAlignmentCenter;
@@ -1260,7 +1367,7 @@
                 self.imgView.layer.masksToBounds = YES;
                 self.imgView.tag = [huaiyuntianshu integerValue];
                 self.imgView.layer.cornerRadius = self.imgView.frame.size.width/2;
-                [self.scrollView addSubview:self.imgView];
+                [self.titleScrollView addSubview:self.imgView];
                 //self.moviePlayerCtl.contentURL =[NSURL URLWithString:[[self.chengzhangArr objectAtIndex:0] objectForKey:@"video"]];
                 self.imgView.image = [UIImage imageWithVideo:[NSURL URLWithString:[[self.chengzhangArr objectAtIndex:0] objectForKey:@"video"]]];
                 
@@ -1293,7 +1400,7 @@
             //            UIView *indexView = [[UIView alloc] initWithFrame:CGRectMake(ScreenWidth*width, 0, ScreenWidth, self.titleScrollView.frame.size.height)];
             //            indexView.tag = width;
             //            [self.titleScrollView addSubview:indexView];
-            if (width+1>1&&width+1<280)
+            if (width+1>1&&width+1<279)
             {
                 for (int i = 0; i<3; i++) {
                     UIButton *todayBtn = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -1341,7 +1448,7 @@
                     [tizhongBtn addSubview:tizhonglabel];
                     
                     UILabel *countlabel = [[UILabel alloc] initWithFrame:CGRectMake((0.1*jingxiangImg.frame.size.width-20)/2, tizhonglabel.frame.origin.y+tizhonglabel.frame.size.height, 20, 30)];
-                    countlabel.text = [NSString stringWithFormat:@"%@kg",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"tizhong"]];
+                    countlabel.text = [NSString stringWithFormat:@"%@",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"tizhong"]];
                     countlabel.textColor = RGBA(238, 123, 135, 1);
                     //tizhonglabel.layer.cornerRadius = 6;
                     countlabel.textAlignment = NSTextAlignmentCenter;
@@ -1384,7 +1491,7 @@
                     [shengaoBtn addSubview:shengaolabel];
                     
                     UILabel *shengaocount = [[UILabel alloc] initWithFrame:CGRectMake(shengaoBtn.frame.size.width-(0.1*jingxiangImg.frame.size.width-12)-20, shengaolabel.frame.origin.y+shengaolabel.frame.size.height, 20, 30)];
-                    shengaocount.text = [NSString stringWithFormat:@"%@cm",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"shengao"]];
+                    shengaocount.text = [NSString stringWithFormat:@"%@",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"shengao"]];
                     shengaocount.textColor = RGBA(201, 160, 99, 1);
                     //tizhonglabel.layer.cornerRadius = 6;
                     shengaocount.textAlignment = NSTextAlignmentCenter;
@@ -1493,7 +1600,7 @@
                 [tizhongBtn addSubview:tizhonglabel];
                 
                 UILabel *countlabel = [[UILabel alloc] initWithFrame:CGRectMake((0.1*jingxiangImg.frame.size.width-20)/2, tizhonglabel.frame.origin.y+tizhonglabel.frame.size.height, 20, 30)];
-                countlabel.text = [NSString stringWithFormat:@"%@kg",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"tizhong"]];
+                countlabel.text = [NSString stringWithFormat:@"%@",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"tizhong"]];
                 countlabel.textColor = RGBA(238, 123, 135, 1);
                 //tizhonglabel.layer.cornerRadius = 6;
                 countlabel.textAlignment = NSTextAlignmentCenter;
@@ -1536,7 +1643,7 @@
                 [shengaoBtn addSubview:shengaolabel];
                 
                 UILabel *shengaocount = [[UILabel alloc] initWithFrame:CGRectMake(shengaoBtn.frame.size.width-(0.1*jingxiangImg.frame.size.width-12)-20, shengaolabel.frame.origin.y+shengaolabel.frame.size.height, 20, 30)];
-                shengaocount.text = [NSString stringWithFormat:@"%@cm",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"shengao"]];
+                shengaocount.text = [NSString stringWithFormat:@"%@",[[self.chengzhangArr objectAtIndex:0] objectForKey:@"shengao"]];
                 shengaocount.textColor = RGBA(201, 160, 99, 1);
                 //tizhonglabel.layer.cornerRadius = 6;
                 shengaocount.textAlignment = NSTextAlignmentCenter;
@@ -1562,7 +1669,7 @@
                 
                 
                 
-                self.imgView = [[UIImageView alloc] initWithFrame:CGRectMake(28+(ScreenWidth-78)*0.21+ScreenWidth*(width), 15+(ScreenWidth-100)*0.1, (ScreenWidth-78)*0.68, (ScreenWidth-100)*0.71)];
+                self.imgView = [[UIImageView alloc] initWithFrame:CGRectMake(28+(ScreenWidth-78)*0.21+ScreenWidth*width, 15+(ScreenWidth-100)*0.1, (ScreenWidth-78)*0.68, (ScreenWidth-100)*0.71)];
                 imgView.tag = width+101;
                 self.imgView.userInteractionEnabled = YES;
                 self.imgView.multipleTouchEnabled = YES;
@@ -1570,6 +1677,25 @@
                 self.imgView.layer.cornerRadius = self.imgView.frame.size.width/2;
                 [self.scrollView addSubview:self.imgView];
                 //self.moviePlayerCtl.contentURL =[NSURL URLWithString:[[self.chengzhangArr objectAtIndex:0] objectForKey:@"video"]];
+//                dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+//                //2.把任务添加到队列中执行
+//                dispatch_async(queue, ^{
+//                    
+//                    //打印当前线程
+//                    NSLog(@"%@",[NSThread currentThread]);
+//                    //3.从网络上下载图片
+//                    NSURL *urlstr=[NSURL URLWithString:[[self.chengzhangArr objectAtIndex:0] objectForKey:@"video"]];
+//                    UIImage *image=[UIImage imageWithVideo:urlstr];
+//                    //提示
+//                    NSLog(@"图片加载完毕");
+//                    
+//                    //4.回到主线程，展示图片
+//                    dispatch_async(dispatch_get_main_queue(), ^{
+//                                     self.imgView.image=image;
+//                                     //打印当前线程
+//                                     NSLog(@"%@",[NSThread currentThread]);
+//                                 });
+//                });
                 self.imgView.image = [UIImage imageWithVideo:[NSURL URLWithString:[[self.chengzhangArr objectAtIndex:0] objectForKey:@"video"]]];
                 
                 
@@ -1595,12 +1721,124 @@
             }
         }
         
+        UIImageView *shipinImg = [[UIImageView alloc] initWithFrame:CGRectMake(0, imgView.frame.size.height, ScreenWidth, ScreenHeight*0.26)];
+        shipinImg.image = [UIImage imageNamed:@"shipinImg"];
+        shipinImg.userInteractionEnabled = YES;
+        shipinImg.multipleTouchEnabled = YES;
+        [titleView addSubview:shipinImg];
         
-        UIImageView *tixingImg = [[UIImageView alloc] initWithFrame:CGRectMake(15, imgView.frame.size.height+15, 33, 33)];
+        UIButton *renqiBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        renqiBtn.frame = CGRectMake(ScreenWidth*0.076, shipinImg.frame.size.height*0.06, ScreenWidth*0.155, shipinImg.frame.size.height*0.352);
+        [renqiBtn setImage:[UIImage imageNamed:@"人气"] forState:UIControlStateNormal];
+        [renqiBtn addTarget:self action:@selector(clickrenqiBtn) forControlEvents:UIControlEventTouchUpInside];
+        [shipinImg addSubview:renqiBtn];
+        
+        UILabel *renqiLabel = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth*0.076-5, renqiBtn.frame.origin.y+renqiBtn.frame.size.height+2, ScreenWidth*0.155+10, 10)];
+        renqiLabel.text = @"美妈萌宝上电视";
+        renqiLabel.textAlignment = NSTextAlignmentCenter;
+        renqiLabel.textColor = [UIColor whiteColor];
+        renqiLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:8];
+        [shipinImg addSubview:renqiLabel];
+        
+        UIButton *quanweiBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        quanweiBtn.frame = CGRectMake(renqiBtn.frame.origin.x+renqiBtn.frame.size.width+ScreenWidth*0.076, shipinImg.frame.size.height*0.06, ScreenWidth*0.155, shipinImg.frame.size.height*0.352);
+        [quanweiBtn setImage:[UIImage imageNamed:@"权威"] forState:UIControlStateNormal];
+        [quanweiBtn addTarget:self action:@selector(clickquanweiBtn) forControlEvents:UIControlEventTouchUpInside];
+        [shipinImg addSubview:quanweiBtn];
+        
+        UILabel *quanweiLabel = [[UILabel alloc] initWithFrame:CGRectMake(renqiBtn.frame.origin.x+renqiBtn.frame.size.width+ScreenWidth*0.076-10, quanweiBtn.frame.origin.y+quanweiBtn.frame.size.height+2, ScreenWidth*0.155+15, 10)];
+        quanweiLabel.textColor = [UIColor whiteColor];
+        quanweiLabel.textAlignment = NSTextAlignmentCenter;
+        quanweiLabel.text = @"母婴专家知识视频";
+        quanweiLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:8];
+        [shipinImg addSubview:quanweiLabel];
+        
+        UIButton *jianbiBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        jianbiBtn.frame = CGRectMake(quanweiBtn.frame.origin.x+quanweiBtn.frame.size.width+ScreenWidth*0.076, shipinImg.frame.size.height*0.06, ScreenWidth*0.155, shipinImg.frame.size.height*0.352);
+        [jianbiBtn setImage:[UIImage imageNamed:@"爆笑简笔画"] forState:UIControlStateNormal];
+        [jianbiBtn addTarget:self action:@selector(clickjianbiBtn) forControlEvents:UIControlEventTouchUpInside];
+        [shipinImg addSubview:jianbiBtn];
+        
+        UILabel *jianbiLabel = [[UILabel alloc] initWithFrame:CGRectMake(quanweiBtn.frame.origin.x+quanweiBtn.frame.size.width+ScreenWidth*0.076, jianbiBtn.frame.origin.y+jianbiBtn.frame.size.height+2, ScreenWidth*0.155, 10)];
+        jianbiLabel.text = @"爆笑简笔画";
+        jianbiLabel.textAlignment = NSTextAlignmentCenter;
+        jianbiLabel.textColor = [UIColor whiteColor];
+        jianbiLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:8];
+        [shipinImg addSubview:jianbiLabel];
+        
+        UIButton *fayuBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        fayuBtn.frame = CGRectMake(jianbiBtn.frame.origin.x+jianbiBtn.frame.size.width+ScreenWidth*0.076, shipinImg.frame.size.height*0.06, ScreenWidth*0.155, shipinImg.frame.size.height*0.352);
+        [fayuBtn setImage:[UIImage imageNamed:@"胎儿发育"] forState:UIControlStateNormal];
+        [fayuBtn addTarget:self action:@selector(clickfayuBtn) forControlEvents:UIControlEventTouchUpInside];
+        [shipinImg addSubview:fayuBtn];
+        
+        UILabel *fayuLabel = [[UILabel alloc] initWithFrame:CGRectMake(jianbiBtn.frame.origin.x+jianbiBtn.frame.size.width+ScreenWidth*0.076, fayuBtn.frame.origin.y+fayuBtn.frame.size.height+2, ScreenWidth*0.155, 10)];
+        fayuLabel.text = @"胎儿发育";
+        fayuLabel.textAlignment = NSTextAlignmentCenter;
+        fayuLabel.textColor = [UIColor whiteColor];
+        fayuLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:8];
+        [shipinImg addSubview:fayuLabel];
+        
+        UIButton *bianhuaBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        bianhuaBtn.frame = CGRectMake(ScreenWidth*0.076, renqiLabel.frame.origin.y+renqiLabel.frame.size.height+shipinImg.frame.size.height*0.06, ScreenWidth*0.155, shipinImg.frame.size.height*0.352);
+        [bianhuaBtn setImage:[UIImage imageNamed:@"妈妈变化"] forState:UIControlStateNormal];
+        [bianhuaBtn addTarget:self action:@selector(clickbianhuaBtn) forControlEvents:UIControlEventTouchUpInside];
+        [shipinImg addSubview:bianhuaBtn];
+        
+        UILabel *bianhuaLabel = [[UILabel alloc] initWithFrame:CGRectMake(ScreenWidth*0.076, bianhuaBtn.frame.origin.y+bianhuaBtn.frame.size.height+2, ScreenWidth*0.155, 10)];
+        bianhuaLabel.text = @"妈妈变化";
+        bianhuaLabel.textAlignment = NSTextAlignmentCenter;
+        bianhuaLabel.textColor = [UIColor whiteColor];
+        bianhuaLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:8];
+        [shipinImg addSubview:bianhuaLabel];
+        
+        UIButton *zhuanjiaBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        zhuanjiaBtn.frame = CGRectMake(bianhuaBtn.frame.origin.x+bianhuaBtn.frame.size.width+ScreenWidth*0.076, renqiLabel.frame.origin.y+renqiLabel.frame.size.height+shipinImg.frame.size.height*0.06, ScreenWidth*0.155, shipinImg.frame.size.height*0.352);
+        [zhuanjiaBtn setImage:[UIImage imageNamed:@"专家解疑"] forState:UIControlStateNormal];
+        [zhuanjiaBtn addTarget:self action:@selector(clickzhuanjiaBtn) forControlEvents:UIControlEventTouchUpInside];
+        [shipinImg addSubview:zhuanjiaBtn];
+        
+        UILabel *zhuanjiaLabel = [[UILabel alloc] initWithFrame:CGRectMake(bianhuaBtn.frame.origin.x+bianhuaBtn.frame.size.width+ScreenWidth*0.076, zhuanjiaBtn.frame.origin.y+zhuanjiaBtn.frame.size.height+2, ScreenWidth*0.155, 10)];
+        zhuanjiaLabel.text = @"专家解疑";
+        zhuanjiaLabel.textAlignment = NSTextAlignmentCenter;
+        zhuanjiaLabel.textColor = [UIColor whiteColor];
+        zhuanjiaLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:8];
+        [shipinImg addSubview:zhuanjiaLabel];
+        
+        UIButton *zhenjiaBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        zhenjiaBtn.frame = CGRectMake(zhuanjiaBtn.frame.origin.x+zhuanjiaBtn.frame.size.width+ScreenWidth*0.076, renqiLabel.frame.origin.y+renqiLabel.frame.size.height+shipinImg.frame.size.height*0.06, ScreenWidth*0.155, shipinImg.frame.size.height*0.352);
+        [zhenjiaBtn setImage:[UIImage imageNamed:@"真假辟谣"] forState:UIControlStateNormal];
+        [zhenjiaBtn addTarget:self action:@selector(clickzhenjiaBtn) forControlEvents:UIControlEventTouchUpInside];
+        [shipinImg addSubview:zhenjiaBtn];
+        
+        UILabel *zhenjiaLabel = [[UILabel alloc] initWithFrame:CGRectMake(zhuanjiaBtn.frame.origin.x+zhuanjiaBtn.frame.size.width+ScreenWidth*0.076, zhenjiaBtn.frame.origin.y+zhenjiaBtn.frame.size.height+2, ScreenWidth*0.155, 10)];
+        zhenjiaLabel.text = @"真假辟谣";
+        zhenjiaLabel.textAlignment = NSTextAlignmentCenter;
+        zhenjiaLabel.textColor = [UIColor whiteColor];
+        zhenjiaLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:8];
+        [shipinImg addSubview:zhenjiaLabel];
+        
+        
+        UIButton *gengduoBtn = [UIButton buttonWithType:UIButtonTypeCustom];
+        gengduoBtn.frame = CGRectMake(zhenjiaBtn.frame.origin.x+zhenjiaBtn.frame.size.width+ScreenWidth*0.076, renqiLabel.frame.origin.y+renqiLabel.frame.size.height+shipinImg.frame.size.height*0.06, ScreenWidth*0.155, shipinImg.frame.size.height*0.352);
+        [gengduoBtn setImage:[UIImage imageNamed:@"更多知识"] forState:UIControlStateNormal];
+        [gengduoBtn addTarget:self action:@selector(clickgengduoBtn) forControlEvents:UIControlEventTouchUpInside];
+        [shipinImg addSubview:gengduoBtn];
+        
+        UILabel *gengduoLabel = [[UILabel alloc] initWithFrame:CGRectMake(zhenjiaBtn.frame.origin.x+zhenjiaBtn.frame.size.width+ScreenWidth*0.076, gengduoBtn.frame.origin.y+gengduoBtn.frame.size.height+2, ScreenWidth*0.155, 10)];
+        gengduoLabel.text = @"更多知识";
+        gengduoLabel.textAlignment = NSTextAlignmentCenter;
+        gengduoLabel.textColor = [UIColor whiteColor];
+        gengduoLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:8];
+        [shipinImg addSubview:gengduoLabel];
+
+        
+        
+        UIImageView *tixingImg = [[UIImageView alloc] initWithFrame:CGRectMake(15, shipinImg.frame.origin.y+shipinImg.frame.size.height+15, 33, 33)];
         tixingImg.image = [UIImage imageNamed:[self.imgArr objectAtIndex:section]];
         [titleView addSubview:tixingImg];
         
-        UILabel *tixinglabel = [[UILabel alloc] initWithFrame:CGRectMake(tixingImg.frame.origin.x+tixingImg.frame.size.width+12, imgView.frame.size.height+15, ScreenWidth-(tixingImg.frame.origin.x+tixingImg.frame.size.width+42), 15)];
+        UILabel *tixinglabel = [[UILabel alloc] initWithFrame:CGRectMake(tixingImg.frame.origin.x+tixingImg.frame.size.width+12, shipinImg.frame.origin.y+shipinImg.frame.size.height+15, ScreenWidth-(tixingImg.frame.origin.x+tixingImg.frame.size.width+42), 15)];
         tixinglabel.textColor = RGBA(238, 128, 135, 1);
         tixinglabel.text = [self.tableArr objectAtIndex:section];
         tixinglabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:15];
@@ -1613,69 +1851,12 @@
         [titleView addSubview:tixingText];
         
         UIButton *jinruBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        jinruBtn.frame = CGRectMake(ScreenWidth-26, imgView.frame.size.height+21, 10, 18);
+        jinruBtn.frame = CGRectMake(ScreenWidth-26, shipinImg.frame.origin.y+shipinImg.frame.size.height+21, 10, 18);
         [jinruBtn setImage:[UIImage imageNamed:@"进入"] forState:UIControlStateNormal];
         [jinruBtn addTarget:self action:@selector(clickJinruBtn) forControlEvents:UIControlEventTouchUpInside];
         [titleView addSubview:jinruBtn];
         
         return titleView;
-    }
-    else if(section == 2)
-    {
-        UIView *biaotouView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 133)];
-        biaotouView.backgroundColor = [UIColor whiteColor];
-        
-        UITapGestureRecognizer *singleTouch = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissKeyboard:)];
-        [biaotouView addGestureRecognizer:singleTouch];
-        
-        UIImageView *biaotouImg = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, 77)];
-        biaotouImg.image = [UIImage imageNamed:@"表头"];
-        biaotouImg.userInteractionEnabled = YES;
-        biaotouImg.multipleTouchEnabled = YES;
-        [biaotouView addSubview:biaotouImg];
-        
-        UIButton *maotouBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        maotouBtn.frame = CGRectMake(20, 12, 56, 56);
-        [maotouBtn setImage:[UIImage imageNamed:@"猫头"] forState:UIControlStateNormal];
-        [maotouBtn addTarget:self action:@selector(clickmaotouBtn) forControlEvents:UIControlEventTouchUpInside];
-        [biaotouImg addSubview:maotouBtn];
-        
-        UIButton *jiangbeiBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        jiangbeiBtn.frame = CGRectMake(maotouBtn.frame.origin.x+maotouBtn.frame.size.width+(ScreenWidth-264)/3, 12, 56, 56);
-        [jiangbeiBtn setImage:[UIImage imageNamed:@"奖杯"] forState:UIControlStateNormal];
-        [jiangbeiBtn addTarget:self action:@selector(clickjiangbeiBtn) forControlEvents:UIControlEventTouchUpInside];
-        [biaotouImg addSubview:jiangbeiBtn];
-        
-        UIButton *downloadBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        downloadBtn.frame = CGRectMake(jiangbeiBtn.frame.origin.x+jiangbeiBtn.frame.size.width+(ScreenWidth-264)/3, 12, 56, 56);
-        [downloadBtn setImage:[UIImage imageNamed:@"下载"] forState:UIControlStateNormal];
-        [downloadBtn addTarget:self action:@selector(clickdownloadBtn) forControlEvents:UIControlEventTouchUpInside];
-        [biaotouImg addSubview:downloadBtn];
-        
-        UIButton *yusanBtn = [UIButton buttonWithType:UIButtonTypeCustom];
-        yusanBtn.frame = CGRectMake(ScreenWidth-76, 12, 56, 56);
-        [yusanBtn setImage:[UIImage imageNamed:@"雨伞"] forState:UIControlStateNormal];
-        [yusanBtn addTarget:self action:@selector(clickyusanBtn) forControlEvents:UIControlEventTouchUpInside];
-        [biaotouImg addSubview:yusanBtn];
-        
-        UIImageView *titleImg = [[UIImageView alloc] initWithFrame:CGRectMake(15, biaotouImg.frame.size.height+15, 33, 33)];
-        titleImg.image = [UIImage imageNamed:[self.imgArr objectAtIndex:section]];
-        [biaotouView addSubview:titleImg];
-        
-        UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titleImg.frame.origin.x+titleImg.frame.size.width+12, biaotouImg.frame.size.height+15, ScreenWidth-(titleImg.frame.origin.x+titleImg.frame.size.width+42), 15)];
-        titleLabel.textColor = RGBA(238, 128, 135, 1);
-        titleLabel.text = [self.tableArr objectAtIndex:section];
-        titleLabel.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:15];
-        [biaotouView addSubview:titleLabel];
-        
-        UILabel *titletext = [[UILabel alloc] initWithFrame:CGRectMake(titleImg.frame.origin.x+titleImg.frame.size.width+12, titleLabel.frame.origin.y+titleLabel.frame.size.height+5, ScreenWidth-(titleImg.frame.origin.x+titleImg.frame.size.width+42), 8)];
-        titletext.textColor = RGBA(89, 87, 87, 1);
-        titletext.text = [self.textArr objectAtIndex:section];
-        titletext.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:8];
-        [biaotouView addSubview:titletext];
-        
-        return biaotouView;
-        
     }
     else
     {
@@ -1699,8 +1880,8 @@
         titletext.text = [self.textArr objectAtIndex:section];
         titletext.font = [UIFont fontWithName:@"Microsoft Yahei UI" size:8];
         [headerView addSubview:titletext];
-        if (section == 1) {
-            self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(ScreenWidth-117,21, 106, 25)];
+        if (section == 2) {
+            self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(ScreenWidth-117,15, 106, 25)];
             self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
             //self.searchBar.layer.borderWidth = 1.5;
             //self.searchBar.layer.masksToBounds = YES;
@@ -1719,6 +1900,63 @@
         return headerView;
     }
 }
+
+-(void)clickrenqiBtn
+{
+    for (UIView *subviews in [self.navigationController.view subviews]) {
+        if (subviews.tag==66) {
+            [subviews removeFromSuperview];
+        }
+    }
+    MomTV_VC *momVC = [[MomTV_VC alloc] init];
+    momVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:momVC animated:YES];
+}
+
+-(void)clickquanweiBtn
+{
+    for (UIView *subviews in [self.navigationController.view subviews]) {
+        if (subviews.tag==66) {
+            [subviews removeFromSuperview];
+        }
+    }
+    Search_VC *searchVC = [[Search_VC alloc] init];
+    searchVC.searchStr = @"1";
+    searchVC.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:searchVC animated:YES];
+    
+}
+
+-(void)clickjianbiBtn
+{
+    
+}
+
+-(void)clickfayuBtn
+{
+    
+}
+
+-(void)clickbianhuaBtn
+{
+    
+}
+
+-(void)clickzhuanjiaBtn
+{
+    
+}
+
+-(void)clickzhenjiaBtn
+{
+    
+}
+
+-(void)clickgengduoBtn
+{
+    
+}
+
 
 //取消searchbar背景色
 - (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size
@@ -1740,12 +1978,64 @@
 -(void)clickPlayBtn:(UIButton*)btn
 {
     NSLog(@"ttttttttt");
-    //CGRectMake(0, ScreenHeight*0.18, ScreenWidth, ScreenHeight*0.64)
+    
     UIView *view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, ScreenWidth, ScreenHeight)];
-    view.backgroundColor = [UIColor colorWithWhite:0.7 alpha:1];
-    [self.view addSubview:view];
+    view.backgroundColor = [UIColor blackColor];
+    view.alpha = 0.9;
+    view.tag = 321;
+    [self.tabBarController.view addSubview:view];
+    
+    UITapGestureRecognizer *singleTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleSingleTap)];
+    singleTap.delegate = self;
+    [singleTap setNumberOfTapsRequired:1];//1次点击
+    [singleTap setNumberOfTouchesRequired:1];//1个手指操作
+    [view addGestureRecognizer:singleTap];
     
     
+    
+    
+    self.moviePlayerCtl = [[MPMoviePlayerController alloc]init];
+    //设置属性
+    self.moviePlayerCtl.allowsAirPlay = YES;
+    //设置
+    self.moviePlayerCtl.view.frame = CGRectMake(0, ScreenHeight*0.18, ScreenWidth, ScreenHeight*0.64);
+    //设置缩放模式
+    [self.moviePlayerCtl setScalingMode:MPMovieScalingModeAspectFit];
+    //设置属性风格
+    self.moviePlayerCtl.view.backgroundColor = [UIColor blackColor];
+    self.moviePlayerCtl.controlStyle = MPMovieControlStyleEmbedded;
+    //添加到本试图控制器视图
+    [view addSubview:self.moviePlayerCtl.view];
+    
+    [self movePlay:btn.tag];
+}
+
+-(BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    return NO;
+}
+
+-(void)movePlay:(NSInteger)tag
+{
+    [self.manager GET:@"http://101.200.234.127:8080/YanLu/chengzhang/list.do" parameters:[@{@"huaiyuntime":[NSString stringWithFormat:@"%d",tag]}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        NSData *data = (NSData *)responseObject;
+        NSArray *shujuArr =[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        self.moviePlayerCtl.contentURL =[NSURL URLWithString:[[shujuArr objectAtIndex:0] objectForKey:@"video"]];
+        [self.moviePlayerCtl play];
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"获取相响应失败");
+    }];
+}
+
+-(void)handleSingleTap
+{
+    for (UIView *subviews in [self.tabBarController.view subviews]) {
+        if (subviews.tag==321) {
+            [subviews removeFromSuperview];
+        }
+    }
 }
 
 -(void)clickJinruBtn
@@ -1836,6 +2126,7 @@ float lastContentOffset;
     //self.scrollView.scrollView.contentOffset = CGPointMake( ScreenWidth/5*280/ 2-CGRectGetWidth(self.view.bounds) / 2, 0);
     //[self.scrollView reloadData];
     [self addchengzhangjilu:[huaiyuntianshu integerValue]];
+    [self.tableView reloadData];
 }
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
@@ -1908,7 +2199,7 @@ float lastContentOffset;
                 
                 break;
                 
-            case 1:
+            case 2:
                 for (UIView *subviews in [self.navigationController.view subviews]) {
                     if (subviews.tag==66) {
                         [subviews removeFromSuperview];
@@ -1916,10 +2207,11 @@ float lastContentOffset;
                 }
                 nutriVC.idStr = [[self.yingyangArr objectAtIndex:indexPath.row] objectForKey:@"id"];
                 nutriVC.biaotiStr = [[self.yingyangArr objectAtIndex:indexPath.row] objectForKey:@"biaoti"];
+                nutriVC.imgStr = [[self.yingyangArr objectAtIndex:indexPath.row] objectForKey:@"tupian"];
                 [self.navigationController pushViewController:nutriVC animated:YES];
                 break;
                 
-            case 2:
+            case 1:
                 articlVC.dataDic = [self.knowledgeArr objectAtIndex:indexPath.row];
                 for (UIView *subviews in [self.navigationController.view subviews]) {
                     if (subviews.tag==66) {
@@ -1954,9 +2246,15 @@ float lastContentOffset;
         NSString *neirong =[dict objectForKey:@"neirong"];
         NSString *title = [dict objectForKey:@"title"];
         NSString *quanziID=[dict objectForKey:@"quanziid"];
+        NSString *dianzan=[[dict objectForKey:@"dianzan"]stringValue];
+        NSString *zhuangtia=[[dict objectForKey:@"zhuangtai"]stringValue];
+        
+        NSString *pinglunNUmber=[dict objectForKey:@"pinglunzongshu"];
         NSString *userid=[dict objectForKey:@"userid"];
         NSString *dianzanzongshu=[[dict objectForKey:@"dianzanzongshu"]stringValue];
         NSString *time=[dict objectForKey:@"time"];
+        
+        NSString *chakanzongshu=[[dict objectForKey:@"chakanzongshu"]stringValue];
         
         PostsDetails_VC *Posts = [[PostsDetails_VC alloc] init];
         Posts.TidCount = tieziID;
@@ -1969,6 +2267,11 @@ float lastContentOffset;
         Posts.zannumber=dianzanzongshu;
         Posts.quanName=@"北京妈妈圈";
         Posts.time=time;
+        Posts.dianzan=dianzan;
+        Posts.pinglunnuber=pinglunNUmber;
+        Posts.chakanzongshu=chakanzongshu;
+        Posts.zhuangtai=zhuangtia;
+        Posts.quanName=@"北京妈妈圈";
         Posts.hidesBottomBarWhenPushed =YES;
         for (UIView *subviews in [self.navigationController.view subviews]) {
             if (subviews.tag==66) {

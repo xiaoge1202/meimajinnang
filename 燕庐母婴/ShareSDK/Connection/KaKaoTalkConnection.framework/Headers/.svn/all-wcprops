@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 161
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/KaKaoTalkConnection.framework/Headers
+END
+SSKakaoTalkErrorInfo.h
+K 25
+svn:wc:ra_dav:version-url
+V 184
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/KaKaoTalkConnection.framework/Headers/SSKakaoTalkErrorInfo.h
+END
+ISSKakaoTalkApp.h
+K 25
+svn:wc:ra_dav:version-url
+V 179
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/KaKaoTalkConnection.framework/Headers/ISSKakaoTalkApp.h
+END
+KakaoTalkConnection.h
+K 25
+svn:wc:ra_dav:version-url
+V 183
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/KaKaoTalkConnection.framework/Headers/KakaoTalkConnection.h
+END
+SSKakaoTalkShareContentEntity.h
+K 25
+svn:wc:ra_dav:version-url
+V 193
+/svn/Work/!svn/ver/660/IOS/%E7%BE%8E%E5%A6%88%E9%94%A6%E5%9B%8A1.0/%E7%87%95%E5%BA%90%E6%AF%8D%E5%A9%B4/ShareSDK/Connection/KaKaoTalkConnection.framework/Headers/SSKakaoTalkShareContentEntity.h
+END

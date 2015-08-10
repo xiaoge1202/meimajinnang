@@ -1,0 +1,88 @@
+//
+//  PostsDetails-VC.h
+//  燕庐母婴
+//
+//  Created by 董飞剑 on 15/5/29.
+//  Copyright (c) 2015年 燕庐科技. All rights reserved.
+//
+//》》》》》》》》》》》》》帖子详情《《《《《《《《《《《《《
+
+#import <UIKit/UIKit.h>
+#import "AFHTTPRequestOperationManager.h"
+#import "PostsBodyCell.h"
+//#import "WeiboApi.h"
+#import "WXApi.h"
+
+
+@interface PostsDetails_VC : UIViewController<UITableViewDataSource,UITableViewDelegate,WXApiDelegate,UITextViewDelegate>
+{
+    CGSize size;
+    CGSize size1;
+    CGSize size2;
+    CGSize size3;
+    BOOL isFirstShowKeyboard;
+    
+    BOOL isButtonClicked;
+    
+    BOOL isKeyboardShowing;
+    
+    BOOL isSystemBoardShow;
+    
+    
+    CGFloat keyboardHeight;
+    
+    
+    
+
+
+       
+    // UITableView *messageListView;
+
+
+}
+@property (nonatomic, retain) UINib *cellNib;
+@property (strong,nonatomic)AFHTTPRequestOperationManager *manager;
+@property (strong,nonatomic) NSArray *mycircleArr;
+
+@property (strong,nonatomic) UITableView *tableView;
+@property (strong,nonatomic) NSArray *dataArr;
+@property (strong,nonatomic) NSArray *huiFuArr;
+@property (strong,nonatomic)UITextView *textView;
+//传过来的Tid
+@property (nonatomic,copy) NSString *TidCount;
+@property(nonatomic,copy)NSString *quanziID;
+
+@property(nonatomic,copy)NSString *dianzan;
+
+@property(nonatomic,copy)NSString *userId;
+
+@property(nonatomic,copy)NSString *quanName;
+
+@property(nonatomic,copy)NSString *zannumber;
+
+@property(nonatomic,copy)NSString *time;
+
+@property(nonatomic,copy)NSString *pinglunnuber;
+@property(nonatomic,copy)NSString *chakanzongshu;
+//楼主标题
+//@property (nonatomic,copy) NSString *title;
+//楼主内容
+@property (nonatomic,copy) NSString *neirong;
+
+@property (strong,nonatomic) UIButton *backBtn;
+
+@property (strong,nonatomic) NSMutableArray *imageArray;;
+
+@property (strong,nonatomic) UIImageView *timeImg;
+@property (strong,nonatomic) UILabel *timeLab;
+
+@property (strong,nonatomic) UIImageView *eyesImg;
+@property (strong,nonatomic) UILabel *eyesLab;
+
+@property (strong,nonatomic) UIImageView *huiFuImg;
+@property (strong,nonatomic) UILabel *huiLab;
+
+
+//发送表情相关
+
+@end

@@ -261,16 +261,19 @@
                 NSData *data = responseObject;
                 NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
                 
-                if ([str isEqualToString:@"true"]) {
-                    
-                    [cell.saveBtn setImage:[UIImage imageNamed:@"list收藏"] forState:UIControlStateNormal];
-                    [cell.saveBtn setTitle:@"已收藏"  forState:UIControlStateNormal];
-                    
-                }else{
-                    
-                    [cell.saveBtn setTitle:@"收藏"  forState:UIControlStateNormal];
-                    [cell.saveBtn setImage:[UIImage imageNamed:@"list未收藏"] forState:UIControlStateNormal];
+                if (![str isKindOfClass:[NSNull class]]) {
+                    if ([str isEqualToString:@"true"]) {
+                        
+                        [cell.saveBtn setImage:[UIImage imageNamed:@"list收藏"] forState:UIControlStateNormal];
+                        [cell.saveBtn setTitle:@"已收藏"  forState:UIControlStateNormal];
+                        
+                    }else{
+                        
+                        [cell.saveBtn setTitle:@"收藏"  forState:UIControlStateNormal];
+                        [cell.saveBtn setImage:[UIImage imageNamed:@"list未收藏"] forState:UIControlStateNormal];
+                    }
                 }
+                
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 
                 NSLog(@"error---");
@@ -282,28 +285,27 @@
             NSString *zanNum = [[arr objectAtIndex:indexPath.row] objectForKey:@"dianzanzongshu"];
             [cell.zanBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
             cell.zanBtn.userInteractionEnabled = NO;
+            
             [self.manager POST:@"http://101.200.234.127:8080/YanLu/dianzan/panduan.do" parameters:[@{@"wenzhangid":listID,@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
                 
                 NSData *data = responseObject;
                 NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
                 
-                if ([str isEqualToString:@"true"]) {
-                    
-                    [cell.zanBtn setImage:[UIImage imageNamed:@"list已赞"] forState:UIControlStateNormal];
-                    [cell.zanBtn setTitle:zanNum  forState:UIControlStateNormal];
-                    
-                }else{
-                    
-                    if ([zanNum isEqual:@"0"]) {
-                        [cell.zanBtn setTitle:@"点赞"  forState:UIControlStateNormal];
+                if (![str isKindOfClass:[NSNull class]]) {
+                    if ([str isEqualToString:@"true"]) {
                         
-                    } else {
+                        [cell.zanBtn setImage:[UIImage imageNamed:@"list已赞"] forState:UIControlStateNormal];
+                        [cell.zanBtn setTitle:zanNum  forState:UIControlStateNormal];
+                        
+                    }else{
+                        
+                        
+                        [cell.zanBtn setImage:[UIImage imageNamed:@"list未赞"] forState:UIControlStateNormal];
                         [cell.zanBtn setTitle:zanNum  forState:UIControlStateNormal];
                         
                     }
-                    [cell.zanBtn setImage:[UIImage imageNamed:@"list未赞"] forState:UIControlStateNormal];
-                    
                 }
+                
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 
                 NSLog(@"error---");
@@ -371,18 +373,19 @@
             
             NSData *data = responseObject;
             NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-            
-            if ([str isEqualToString:@"true"]) {
-                
-                [cell.saveBtn setImage:[UIImage imageNamed:@"list收藏"] forState:UIControlStateNormal];
-                [cell.saveBtn setTitle:@"已收藏"  forState:UIControlStateNormal];
-                
-            }else{
-                
-                [cell.saveBtn setTitle:@"收藏"  forState:UIControlStateNormal];
-                [cell.saveBtn setImage:[UIImage imageNamed:@"list未收藏"] forState:UIControlStateNormal];
+            if (![str isKindOfClass:[NSNull class]]) {
+                if ([str isEqualToString:@"true"]) {
+                    
+                    [cell.saveBtn setImage:[UIImage imageNamed:@"list收藏"] forState:UIControlStateNormal];
+                    [cell.saveBtn setTitle:@"已收藏"  forState:UIControlStateNormal];
+                    
+                }else{
+                    
+                    [cell.saveBtn setTitle:@"收藏"  forState:UIControlStateNormal];
+                    [cell.saveBtn setImage:[UIImage imageNamed:@"list未收藏"] forState:UIControlStateNormal];
+                }
             }
-
+            
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             
             NSLog(@"error---");
@@ -391,34 +394,31 @@
         
         
         
-        
-        
         //点赞
         NSString *zanNum = [[self.dataArr objectAtIndex:indexPath.row] objectForKey:@"dianzanzongshu"];
+        NSLog(@"点赞个数 = %@",zanNum);
         [cell.zanBtn setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
         cell.zanBtn.userInteractionEnabled = NO;
+        
         [self.manager POST:@"http://101.200.234.127:8080/YanLu/dianzan/panduan.do" parameters:[@{@"wenzhangid":listID,@"userid":_userId}mutableCopy] success:^(AFHTTPRequestOperation *operation, id responseObject) {
             
             NSData *data = responseObject;
             NSString *str = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-            
-            if ([str isEqualToString:@"true"]) {
-                
-                [cell.zanBtn setImage:[UIImage imageNamed:@"list已赞"] forState:UIControlStateNormal];
-                [cell.zanBtn setTitle:@"已赞"  forState:UIControlStateNormal];
-                
-            }else{
-                
-                if ([zanNum isEqual:@"0"]) {
-                    [cell.zanBtn setTitle:@"点赞"  forState:UIControlStateNormal];
+            NSLog(@"点赞返回值 = %@",str);
+            if (![str isKindOfClass:[NSNull class]]) {
+                if ([str isEqualToString:@"true"]) {
                     
-                } else {
+                    [cell.zanBtn setImage:[UIImage imageNamed:@"list已赞"] forState:UIControlStateNormal];
+                    [cell.zanBtn setTitle:zanNum  forState:UIControlStateNormal];
+                    
+                }else{
+                    
+                    [cell.zanBtn setImage:[UIImage imageNamed:@"list未赞"] forState:UIControlStateNormal];
                     [cell.zanBtn setTitle:zanNum  forState:UIControlStateNormal];
                     
                 }
-                [cell.zanBtn setImage:[UIImage imageNamed:@"list未赞"] forState:UIControlStateNormal];
-                
             }
+            
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             NSLog(@"error---");
         }];
@@ -457,6 +457,7 @@
             [alert show];
         }else{
             self.searchBar.text = _result;
+            [self.searchBar becomeFirstResponder];
         }
     }
 }

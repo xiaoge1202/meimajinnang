@@ -7,11 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TabBar-VC.h"
+#import "TabBar.h"
+#import "ASIDownloadCache.h"
+#import <TencentOpenAPI/TencentOAuth.h>
+#import <FIR/FIR.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : UIResponder <UIApplicationDelegate,UITabBarControllerDelegate,UITabBarDelegate>
 
 @property (strong, nonatomic) UIWindow *window;
 
-
+@property (nonatomic,retain) ASIDownloadCache *myCache;
+@property (nonatomic,retain) ASIDownloadCache *myCache1;
 @end
 
