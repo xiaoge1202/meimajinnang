@@ -1359,7 +1359,7 @@
 		2BF2F7D21B5F3AB600E903EA /* GuideViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GuideViewController.m; sourceTree = "<group>"; };
 		609B107F1B4B7773003873E9 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		60E82AD61B3688C0005B5AAE /* 666.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 666.jpg; sourceTree = "<group>"; };
-		DB0326A41B1743C10078AD9D /* 美妈锦囊.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "美妈锦囊.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DB0326A41B1743C10078AD9D /* 燕庐母婴.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "燕庐母婴.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DB0326A81B1743C10078AD9D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DB0326A91B1743C10078AD9D /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		DB0326AB1B1743C10078AD9D /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -2364,7 +2364,7 @@
 		DB0326A51B1743C10078AD9D /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DB0326A41B1743C10078AD9D /* 美妈锦囊.app */,
+				DB0326A41B1743C10078AD9D /* 燕庐母婴.app */,
 				DB0326B71B1743C10078AD9D /* 燕庐母婴Tests.xctest */,
 			);
 			name = Products;
@@ -3123,7 +3123,7 @@
 			);
 			name = "燕庐母婴";
 			productName = "燕庐母婴";
-			productReference = DB0326A41B1743C10078AD9D /* 美妈锦囊.app */;
+			productReference = DB0326A41B1743C10078AD9D /* 燕庐母婴.app */;
 			productType = "com.apple.product-type.application";
 		};
 		DB0326B61B1743C10078AD9D /* 燕庐母婴Tests */ = {
@@ -3155,6 +3155,7 @@
 				TargetAttributes = {
 					DB0326A31B1743C10078AD9D = {
 						CreatedOnToolsVersion = 6.1;
+						DevelopmentTeam = A75C4B556B;
 					};
 					DB0326B61B1743C10078AD9D = {
 						CreatedOnToolsVersion = 6.1;
@@ -3940,7 +3941,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Tengfei Ma (PBL3P5JFHN)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tengfei Ma (PBL3P5JFHN)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -3984,7 +3985,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Tengfei Ma (PBL3P5JFHN)";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Tengfei Ma (PBL3P5JFHN)";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
